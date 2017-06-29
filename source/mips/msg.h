@@ -13,16 +13,16 @@ class MsgID
 public:
 	MsgID();
 	short opt,narg;
-	unsigned int arg[5];
+	int arg[5];
 };
 class MsgEX
 {
 
 public:
 	MsgEX();
-	enum msgType{ r1 };
+	enum msgType{ non,r1,r2lh,r2j,load,store, };
 	short opt;
-	unsigned int arg[7];
+	int arg[7];
 };
 
 #endif // MSG_H
