@@ -15,12 +15,16 @@ public:
 	const unsigned int MemSize;
 	static const unsigned int InsStep;
 
+	unsigned int &pc();
+	unsigned int &hi();
+	unsigned int &lo();
+
 	void set_io(const std::string &file);
 
-	void write_reg(int idx, int val, short len);
-	int read_reg(int idx,short len);
+	void write_reg(int idx, int val);
+	unsigned int read_reg(int idx,short len);
 	void write_mem(int idx, int val, short len);
-	int read_mem(int idx, short len);
+	unsigned int read_mem(int idx, short len);
 	unsigned int write_memStr(int idx, const std::string &str, bool zero=1);
 	std::string read_memStr(int idx);
 
@@ -30,9 +34,11 @@ public:
 	void write_ioStr();
 
 private:
-	//lo = reg[32] hi = reg[33]
+
 	char *Memory;
-	unsigned int reg[32],lo,hi,pc,top;
+	//lo = reg[32] hi = reg[33] pc = reg[34]
+	unsigned int reg[35],top;
+	bool locked[25];
 	std::string ioFile;
 
 };

@@ -6,6 +6,7 @@ class WriteBack
 {
 public:
 	WriteBack();
+	void write( int idx, int val );
 private:
 };
 

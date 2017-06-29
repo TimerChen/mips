@@ -8,13 +8,14 @@
 #include <cstring>
 
 
-InsInput::InsInput(CPU *cpuName):cpu(cpuName)
-{ ptr = 0; buffer = ""; initRegs(); }
+InsInput::InsInput(CPU *CpuAddress):cpu(CpuAddress)
+{ ptr = 0; buffer = ""; initRegs(); initPInst(); initInst(); }
 void InsInput::initRegs()
 {
 	std::string str;
 	for(int i = 0; i<32; ++i )
 	{
+		ss.clear();
 		ss << '$' << i;
 		ss >> str;
 		regs[str] = i;
@@ -24,30 +25,35 @@ void InsInput::initRegs()
 	regs["$at"] = j++;
 	for(int i = 0; i < 2; ++i )
 	{
+		ss.clear();
 		ss << "$v" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
 	for(int i = 0; i < 3; ++i )
 	{
+		ss.clear();
 		ss << "$a" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
 	for(int i = 0; i < 7; ++i )
 	{
+		ss.clear();
 		ss << "$t" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
 	for(int i = 0; i < 7; ++i )
 	{
+		ss.clear();
 		ss << "$s" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
 	for(int i = 8; i < 10; ++i )
 	{
+		ss.clear();
 		ss << "$t" << i;
 		ss >> str;
 		regs[str] = j++;
@@ -56,6 +62,7 @@ void InsInput::initRegs()
 	regs["$sp"] = j++;
 	regs["$fp"] = j++;
 	regs["$ra"] = j++;
+	ss.str("");
 }
 void InsInput::initPInst()
 {
@@ -126,11 +133,19 @@ void InsInput::initInst()
 
 void InsInput::initialize(const std::string &file)
 {
-	clearBuffer();
+	clear();
 	readFile( file );
 	makeIns();
 }
 
+void InsInput::clear()
+{
+	labels.clear();
+	clearBuffer();
+	ptr = 0;
+	ss.str("");
+	ss.clear();
+}
 
 void InsInput::clearBuffer()
 	{ buffer = ""; ptr = 0; }
@@ -139,7 +154,7 @@ void InsInput::readFile(const std::string &file)
 {
 	char charBuffer[1024];
 	std::string str;
-	std::ifstream fin(file);
+	std::ifstream fin(file + ".s");
 	if(fin)
 	{
 		while(!fin.eof())
@@ -161,7 +176,7 @@ std::string InsInput::getLine()
 	if(	   buffer[ptr] == '\n'
 		|| buffer[ptr] == '\r'
 		|| buffer[ptr] == '\0' )
-		break;
+		{ ptr++; break; }
 	else
 		cstr[cptr++] = buffer[ptr];
 	cstr[cptr] = 0;
@@ -183,6 +198,7 @@ int InsInput::translate( const std::string &a, const short &type )
 			re = labels[ a ];
 			break;
 		case tokenType::num:
+			ss.clear();
 			ss << a; ss >> re;
 			break;
 		case tokenType::reg:
@@ -194,7 +210,9 @@ int InsInput::translate( const std::string &a, const short &type )
 	return re;
 }
 
-std::string InsInput::getWord(const std::string &line, unsigned int &i, short &type, const bool &isArg )
+std::string InsInput::getWord
+	(const std::string &line, unsigned int &i,
+	 short &type, const bool &isArg )
 {
 	while(i < line.size() &&
 		  (line[i] == ' '|| line[i] == '\t' || line[i] == '\0') ) ++i;
@@ -205,7 +223,8 @@ std::string InsInput::getWord(const std::string &line, unsigned int &i, short &t
 	while( i < line.size() &&
 		 ( isStr ||
 		   ( line[i] != ')' && line[i] != ' ' && line[i] != ':'
-		  && line[i] != ',' && line[i] != '\t' && line[i] != '\0' && line[i] != '#' )
+			&& line[i] != ',' && line[i] != '\t'
+			&& line[i] != '\0' && line[i] != '#' )
 		 ) )
 	{
 		str[j++] = line[i];
@@ -242,14 +261,15 @@ std::string InsInput::getWord(const std::string &line, unsigned int &i, short &t
 	str[j] = 0;
 	if( i < line.size() && line[i] == '#' )
 		i = line.size();
-	if( !j ) return 0;
+	if( !j ) return "";
+
 	if( i < line.size() && line[i] == ':' )
-		{ type = 0; return std::string(str); }
-	else if( str[j] == '.' )
+		{ i++; type = 0; return std::string(str); }
+	else if( str[0] == '.' )
 		{ type = 1; return std::string(str+1); }
-	else if( 'a' <= str[j] && str[j] <= 'z' )
+	else if( 'a' <= str[0] && str[0] <= 'z' )
 		{ type = ( isArg?3:2 ); return std::string(str); }
-	else if( '0' <= str[j] && str[j] <= '9' )
+	else if( '0' <= str[0] && str[0] <= '9' )
 		{ type = 4; return std::string(str); }
 	else if( str[0] == '\"' )
 		{ type = 5; return std::string(str); }
@@ -269,7 +289,7 @@ void InsInput::setTop()
 	{
 		line = getLine();
 		unsigned int i = 0;
-		if( i >= line.size() )
+		if( i < line.size() )
 		{
 			getWord(line, i, type);
 			if(type==2)
@@ -280,17 +300,17 @@ void InsInput::setTop()
 }
 void InsInput::putData()
 {
+
 	std::string line,word;
 	short type;
 	bool isData = 0;
-	int insNum = 0;
 	ptr = 0;
 
 	while( ptr < buffer.size() )
 	{
 		line = getLine();
 		unsigned int i = 0;
-		if( i >= line.size() )
+		if( i < line.size() )
 		{
 			word = getWord(line, i, type);
 			if(type == -1) continue;
@@ -305,7 +325,9 @@ void InsInput::putData()
 					{
 						int tmp;
 						word = getWord(line, i, type, 1);
-						ss << word;ss >> tmp;tmp = (1<<tmp);
+						ss.clear();
+						ss << word;ss >> tmp;
+						tmp = (1<<tmp);
 						while( cpu->top % tmp )
 							cpu->Memory[cpu->top++] = 0;
 					}else if( word == "ascii" ){
@@ -322,6 +344,7 @@ void InsInput::putData()
 							word = getWord(line, i, type, 1);
 							if(type == -1) break;
 							char tmp;
+							ss.clear();
 							ss << word; ss >> tmp;
 							*((char*)(cpu->Memory + cpu->top)) = tmp;
 							cpu->top += sizeof(tmp);
@@ -332,6 +355,7 @@ void InsInput::putData()
 							word = getWord(line, i, type, 1);
 							if(type == -1) break;
 							short tmp;
+							ss.clear();
 							ss << word; ss >> tmp;
 							*((short*)(cpu->Memory + cpu->top)) = tmp;
 							cpu->top += sizeof(tmp);
@@ -342,6 +366,7 @@ void InsInput::putData()
 							word = getWord(line, i, type, 1);
 							if(type == -1) break;
 							int tmp;
+							ss.clear();
 							ss << word; ss >> tmp;
 							*((int*)(cpu->Memory + cpu->top)) = tmp;
 							cpu->top += sizeof(tmp);
@@ -349,6 +374,7 @@ void InsInput::putData()
 					}else if( word == "space" ){
 						word = getWord(line, i, type, 1);
 						int tmp;
+						ss.clear();
 						ss << word; ss >> tmp;
 						while(tmp--)
 							cpu->Memory[cpu->top++] = 0;
@@ -361,20 +387,22 @@ void InsInput::putData()
 			}
 		}
 	}
+
+	ss.str("");
 }
 void InsInput::putInst()
 {
 	std::string line,word;
 	short type;
 	bool isData = 0;
-	int insNum = 0,pcTop = 0;
+	int pcTop = 0;
 	Instruction ins;
 	ptr = 0;
 	while( ptr < buffer.size() )
 	{
 		line = getLine();
 		unsigned int i = 0;
-		if( i >= line.size() )
+		if( i < line.size() )
 		{
 			getWord(line, i, type);
 			if( type == tokenType::pinst )
@@ -405,13 +433,21 @@ void InsInput::putInst()
 					ins.arg0 = regs[ args[0] ];
 					ins.arg1 = 63;
 					ins.arg2 = translate( args[1], aType[1] );
+
+					if( Instruction::Ints::lb <= ins.arg0
+					 && ins.arg0 <= Instruction::Ints::sw )
+					{
+						ins.arg1 = ins.arg2;
+						ins.arg2 = 0;
+					}
 				}
 				else if( aType[0] != -1 ) // 3
 				{
 					ins.arg0 = regs[ args[0] ];
 					ins.arg1 = translate( args[1], aType[1] );
 					ins.arg2 = translate( args[2], aType[2] );
-					if( Instruction::Ints::lb <= ins.arg0 && ins.arg0 <= Instruction::Ints::sw )
+					if( Instruction::Ints::lb <= ins.arg0
+					 && ins.arg0 <= Instruction::Ints::sw )
 						std::swap( ins.arg1, ins.arg2 );
 				}
 				*((Instruction*)(cpu->Memory + pcTop)) = ins;
@@ -430,5 +466,5 @@ void InsInput::makeIns()
 	setTop();
 	putData();
 	putInst();
-	clearBuffer();
+	clear();
 }

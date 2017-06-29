@@ -21,7 +21,7 @@
 class Mips
 {
 public:
-	Mips();
+	Mips(unsigned int MEMSIZE = 32*1024*1024);
 	~Mips();
 	void run( const std::string &File );
 private:

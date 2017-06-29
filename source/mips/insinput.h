@@ -10,7 +10,7 @@
 class InsInput
 {
 public:
-	InsInput(CPU *cpuName);
+	InsInput(CPU *CpuAddress);
 
 	void initialize(const std::string &file);
 private:
@@ -20,11 +20,11 @@ private:
 	CPU *cpu;
 	unsigned int ptr;
 	std::string buffer;
-	std::vector<std::string> lines;
 	std::map<std::string, unsigned int> labels;
 	std::map<std::string, short> regs, insts, pinsts;
 	std::stringstream ss;
 
+	void clear();
 	void clearBuffer();
 	void readFile(const std::string &file);
 	std::string getLine();

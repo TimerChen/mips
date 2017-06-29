@@ -13,7 +13,9 @@ SOURCES += main.cpp \
     memaccess.cpp \
     writeback.cpp \
     execute.cpp \
-    mips.cpp
+    mips.cpp \
+    device.cpp \
+    msg.cpp
 
 HEADERS += \
     mips.h \
@@ -24,4 +26,6 @@ HEADERS += \
     insdecode.h \
     memaccess.h \
     writeback.h \
-    execute.h
+    execute.h \
+    device.h \
+    msg.h

@@ -1,14 +1,19 @@
 #ifndef INSFETCH_H
 #define INSFETCH_H
 
+#include "cpu.h"
+#include "instruction.h"
 
-class InsFetch
+#include "device.h"
+
+class InsFetch : public Device
 {
 public:
-	InsFetch();
+	InsFetch( CPU *cpuAdress );
 	void getIns();
 private:
-
+	short locked;
+	CPU *cpu;
 
 };
 
