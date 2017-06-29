@@ -20,9 +20,15 @@ class MsgEX
 
 public:
 	MsgEX();
-	enum msgType{ non,r1,r2lh,r2j,load,store, };
+	enum msgType{ non,r1,r2lh,r2j,load,store,oInt,oStr,iInt,iStr,space,exit,exit0 };
 	short opt;
-	int arg[7];
+	int arg[2];
+};
+class MsgMEM
+{
+public:
+	MsgMEM();
+	int idx, arg;
 };
 
 #endif // MSG_H

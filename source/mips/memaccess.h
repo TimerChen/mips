@@ -1,11 +1,14 @@
 #ifndef MEMACCESS_H
 #define MEMACCESS_H
 
+#include "device.h"
+#include "msg.h"
 
-class MemAccess
+class MemAccess : public Device
 {
 public:
-	MemAccess();
+	MemAccess( CPU* cpuAdress );
+	MsgMEM run( const MsgEX &msgEX );
 };
 
 #endif // MEMACCESS_H

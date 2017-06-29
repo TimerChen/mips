@@ -16,7 +16,11 @@ MsgID::MsgID()
 
 MsgEX::MsgEX()
 {
-	opt = 0;
-	for( int i=0; i<7; ++i )
-		arg[i] = 0;
+	opt = arg[0] = arg[1] = 0;
+}
+
+MsgMEM::MsgMEM()
+{
+	idx = 0;
+	arg = 0;
 }
