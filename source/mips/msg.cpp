@@ -1,12 +1,22 @@
 #include "msg.h"
 
-Msg0::Msg0(const char *Str)
+MsgIF::MsgIF(const char *Str)
 {
-	str = new char [12];
 	for( int i=0; i<12; ++i )
 		str[i] = Str[i];
 }
-Msg0::~Msg0()
+
+MsgID::MsgID()
 {
-	delete [] str;
+	opt = narg = 0;
+	for( int i=0; i<5; ++i )
+		arg[i] = 0;
+}
+
+
+MsgEX::MsgEX()
+{
+	opt = 0;
+	for( int i=0; i<7; ++i )
+		arg[i] = 0;
 }

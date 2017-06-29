@@ -1,7 +1,6 @@
 #include "insinput.h"
 #include "instruction.h"
 
-#include <QString>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -292,7 +291,7 @@ void InsInput::setTop()
 		if( i < line.size() )
 		{
 			getWord(line, i, type);
-			if(type==2)
+			if(type == tokenType::inst)
 				insNum++;
 		}
 	}
@@ -416,39 +415,67 @@ void InsInput::putInst()
 			{
 				ins.opt = tokenType::inst;
 				std::string args[3];
+				int argsi[3];
 				short aType[3];
 				for(int ii=0;ii<3;++ii)
 					args[ii] = getWord(line, i, aType[ii], 1);
+
+				/*
+				 *	reg reg reg/num
+				 *  reg reg reg/num / reg reg/num
+				 *	reg label / reg (num) reg
+				 */
 				if( aType[1] == -1 && aType[2] == -1 ) // 1
 				{
-
-					ins.arg2 = translate( args[0], aType[0] );
+					argsi[0] = translate( args[0], aType[0] );
 					if( aType[0] == tokenType::alabel )
-						ins.arg2 = labels[ args[0] ];
-					else //tokenType::reg
-						ins.arg2 = regs[ args[0] ];
+						ins.arg3 = argsi[0];
+					else	//tokenType::reg
+						ins.arg0 = argsi[0];
 				}
 				else if( aType[2] == -1 ) // 2
 				{
-					ins.arg0 = regs[ args[0] ];
-					ins.arg1 = 63;
-					ins.arg2 = translate( args[1], aType[1] );
+					argsi[0] = translate( args[0], aType[0] );
+					argsi[1] = translate( args[1], aType[1] );
+					ins.arg0 = argsi[0];
+					if( aType[1] == tokenType::num || aType[1] == tokenType::alabel )
+						ins.arg3 = argsi[1];
+					else if( aType[1] == tokenType::reg ) //tokenType::
+						ins.arg1 = argsi[1];
+					else
+						std::cerr << "Error" << std::endl;
 
-					if( Instruction::Ints::lb <= ins.arg0
-					 && ins.arg0 <= Instruction::Ints::sw )
-					{
-						ins.arg1 = ins.arg2;
-						ins.arg2 = 0;
-					}
+					if( Instruction::Inst::mul <= ins.opt  &&
+						ins.opt <= Instruction::Inst::divu )
+						ins.opt += Instruction::Inst::mul2 - Instruction::Inst::mul;
 				}
 				else if( aType[0] != -1 ) // 3
 				{
-					ins.arg0 = regs[ args[0] ];
-					ins.arg1 = translate( args[1], aType[1] );
-					ins.arg2 = translate( args[2], aType[2] );
-					if( Instruction::Ints::lb <= ins.arg0
-					 && ins.arg0 <= Instruction::Ints::sw )
-						std::swap( ins.arg1, ins.arg2 );
+					//reg reg reg
+					//reg reg number
+					//reg reg label
+					//reg number label
+					//reg number reg
+					argsi[0] = translate( args[0], aType[0] );
+					argsi[1] = translate( args[1], aType[1] );
+					argsi[2] = translate( args[2], aType[2] );
+					ins.arg0 = argsi[0];
+					if( aType[1] == tokenType::reg )
+					{
+						ins.arg1 = argsi[1];
+						if( aType[2] == tokenType::reg )
+							ins.arg2 = argsi[2];
+						//aType[2] == tokenType::alabel
+						//aType[2] == tokenType::num
+						else
+							ins.arg3 = argsi[3];
+					}else{
+						ins.arg3 = argsi[1];
+						if( aType[2] == tokenType::reg )
+							ins.arg1 = argsi[2];
+						else
+							ins.arg4 = argsi[2];
+					}
 				}
 				*((Instruction*)(cpu->Memory + pcTop)) = ins;
 				pcTop += CPU::InsStep;

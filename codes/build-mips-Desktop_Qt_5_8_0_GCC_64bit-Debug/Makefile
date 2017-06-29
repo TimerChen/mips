@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../source/mips -I. -I../../../../Qt5.8.0/5.8/gcc_64/include -I../../../../Qt5.8.0/5.8/gcc_64/include/QtGui -I../../../../Qt5.8.0/5.8/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG
+CFLAGS        = -pipe -g -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
+INCPATH       = -I../../source/mips -I. -I../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/timemachine/Qt5.8.0/5.8/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -35,8 +35,8 @@ COMPRESS      = gzip -9f
 DISTNAME      = mips1.0.0
 DISTDIR = /home/timemachine/Desktop/mips/codes/build-mips-Desktop_Qt_5_8_0_GCC_64bit-Debug/.tmp/mips1.0.0
 LINK          = g++
-LFLAGS        = -Wl,-rpath,/home/timemachine/Qt5.8.0/5.8/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/timemachine/Qt5.8.0/5.8/gcc_64/lib -lQt5Gui -lQt5Core -lGL -lpthread 
+LFLAGS        = 
+LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -57,7 +57,9 @@ SOURCES       = ../../source/mips/main.cpp \
 		../../source/mips/memaccess.cpp \
 		../../source/mips/writeback.cpp \
 		../../source/mips/execute.cpp \
-		../../source/mips/mips.cpp 
+		../../source/mips/mips.cpp \
+		../../source/mips/device.cpp \
+		../../source/mips/msg.cpp 
 OBJECTS       = main.o \
 		insinput.o \
 		cpu.o \
@@ -67,7 +69,9 @@ OBJECTS       = main.o \
 		memaccess.o \
 		writeback.o \
 		execute.o \
-		mips.o
+		mips.o \
+		device.o \
+		msg.o
 DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/linux.conf \
@@ -218,6 +222,7 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		../../source/mips/.qmake.stash \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -225,26 +230,23 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_post.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qml_debug.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/warn_on.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/resources.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/moc.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/opengl.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/thread.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qmake_use.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/file_copies.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/testcase_targets.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exceptions.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/lex.prf \
-		../../source/mips/mips.pro ../../source/mips/mips.h \
-		../../source/mips/insinput.h \
-		../../source/mips/cpu.h \
-		../../source/mips/instruction.h \
-		../../source/mips/insfetch.h \
-		../../source/mips/insdecode.h \
-		../../source/mips/memaccess.h \
-		../../source/mips/writeback.h \
-		../../source/mips/execute.h ../../source/mips/main.cpp \
+		../../source/mips/mips.pro mips.h \
+		insinput.h \
+		cpu.h \
+		instruction.h \
+		insfetch.h \
+		insdecode.h \
+		memaccess.h \
+		writeback.h \
+		execute.h \
+		device.h \
+		msg.h ../../source/mips/main.cpp \
 		../../source/mips/insinput.cpp \
 		../../source/mips/cpu.cpp \
 		../../source/mips/instruction.cpp \
@@ -253,7 +255,9 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../source/mips/memaccess.cpp \
 		../../source/mips/writeback.cpp \
 		../../source/mips/execute.cpp \
-		../../source/mips/mips.cpp
+		../../source/mips/mips.cpp \
+		../../source/mips/device.cpp \
+		../../source/mips/msg.cpp
 QMAKE_TARGET  = mips
 DESTDIR       = 
 TARGET        = mips
@@ -415,6 +419,7 @@ Makefile: ../../source/mips/mips.pro ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linu
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -422,20 +427,13 @@ Makefile: ../../source/mips/mips.pro ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linu
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_post.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qml_debug.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/warn_on.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/resources.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/moc.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/opengl.prf \
-		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/thread.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qmake_use.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/file_copies.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/testcase_targets.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exceptions.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/lex.prf \
-		../../source/mips/mips.pro \
-		../../../../Qt5.8.0/5.8/gcc_64/lib/libQt5Gui.prl \
-		../../../../Qt5.8.0/5.8/gcc_64/lib/libQt5Core.prl
+		../../source/mips/mips.pro
 	$(QMAKE) -o Makefile ../../source/mips/mips.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/unix.conf:
@@ -587,6 +585,7 @@ Makefile: ../../source/mips/mips.pro ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linu
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf:
@@ -594,11 +593,6 @@ Makefile: ../../source/mips/mips.pro ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linu
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_post.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qml_debug.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/warn_on.prf:
-../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt.prf:
-../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/resources.prf:
-../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/moc.prf:
-../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/opengl.prf:
-../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/unix/thread.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qmake_use.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/file_copies.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/testcase_targets.prf:
@@ -606,8 +600,6 @@ Makefile: ../../source/mips/mips.pro ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/linu
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/yacc.prf:
 ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/lex.prf:
 ../../source/mips/mips.pro:
-../../../../Qt5.8.0/5.8/gcc_64/lib/libQt5Gui.prl:
-../../../../Qt5.8.0/5.8/gcc_64/lib/libQt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ../../source/mips/mips.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 
@@ -622,9 +614,6 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../source/mips/mips.h ../../source/mips/insinput.h ../../source/mips/cpu.h ../../source/mips/instruction.h ../../source/mips/insfetch.h ../../source/mips/insdecode.h ../../source/mips/memaccess.h ../../source/mips/writeback.h ../../source/mips/execute.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../source/mips/main.cpp ../../source/mips/insinput.cpp ../../source/mips/cpu.cpp ../../source/mips/instruction.cpp ../../source/mips/insfetch.cpp ../../source/mips/insdecode.cpp ../../source/mips/memaccess.cpp ../../source/mips/writeback.cpp ../../source/mips/execute.cpp ../../source/mips/mips.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -640,72 +629,35 @@ distclean: clean
 
 ####### Sub-libraries
 
-mocclean: compiler_moc_header_clean compiler_moc_source_clean
-
-mocables: compiler_moc_header_make_all compiler_moc_source_make_all
-
 check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
-compiler_rcc_clean:
-compiler_moc_predefs_make_all: moc_predefs.h
-compiler_moc_predefs_clean:
-	-$(DEL_FILE) moc_predefs.h
-moc_predefs.h: ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/data/dummy.cpp
-	g++ -pipe -g -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/data/dummy.cpp
-
-compiler_moc_header_make_all:
-compiler_moc_header_clean:
-compiler_moc_source_make_all:
-compiler_moc_source_clean:
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean 
+compiler_clean: 
 
 ####### Compile
 
-main.o: ../../source/mips/main.cpp 
+main.o: ../../source/mips/main.cpp ../../source/mips/mips.h \
+		../../source/mips/cpu.h \
+		../../source/mips/instruction.h \
+		../../source/mips/insinput.h \
+		../../source/mips/insfetch.h \
+		../../source/mips/device.h \
+		../../source/mips/insdecode.h \
+		../../source/mips/execute.h \
+		../../source/mips/memaccess.h \
+		../../source/mips/writeback.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../source/mips/main.cpp
 
 insinput.o: ../../source/mips/insinput.cpp ../../source/mips/insinput.h \
 		../../source/mips/cpu.h \
-		../../source/mips/instruction.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/QString \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qstring.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qchar.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qglobal.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qconfig-bootstrapped.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qconfig.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qtcore-config.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qsystemdetection.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qprocessordetection.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qcompilerdetection.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qtypeinfo.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qsysinfo.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qlogging.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qflags.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qtypetraits.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qatomic.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qbasicatomic.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qatomic_bootstrap.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qgenericatomic.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qatomic_cxx11.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qatomic_msvc.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qglobalstatic.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qmutex.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qnumeric.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qversiontagging.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qbytearray.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qrefcount.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qnamespace.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qarraydata.h \
-		../../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qstringbuilder.h
+		../../source/mips/instruction.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insinput.o ../../source/mips/insinput.cpp
 
 cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h
@@ -714,10 +666,14 @@ cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h
 instruction.o: ../../source/mips/instruction.cpp ../../source/mips/instruction.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o instruction.o ../../source/mips/instruction.cpp
 
-insfetch.o: ../../source/mips/insfetch.cpp ../../source/mips/insfetch.h
+insfetch.o: ../../source/mips/insfetch.cpp ../../source/mips/insfetch.h \
+		../../source/mips/cpu.h \
+		../../source/mips/instruction.h \
+		../../source/mips/device.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insfetch.o ../../source/mips/insfetch.cpp
 
-insdecode.o: ../../source/mips/insdecode.cpp ../../source/mips/insdecode.h
+insdecode.o: ../../source/mips/insdecode.cpp ../../source/mips/insdecode.h \
+		../../source/mips/instruction.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insdecode.o ../../source/mips/insdecode.cpp
 
 memaccess.o: ../../source/mips/memaccess.cpp ../../source/mips/memaccess.h
@@ -734,11 +690,18 @@ mips.o: ../../source/mips/mips.cpp ../../source/mips/mips.h \
 		../../source/mips/instruction.h \
 		../../source/mips/insinput.h \
 		../../source/mips/insfetch.h \
+		../../source/mips/device.h \
 		../../source/mips/insdecode.h \
 		../../source/mips/execute.h \
 		../../source/mips/memaccess.h \
 		../../source/mips/writeback.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mips.o ../../source/mips/mips.cpp
+
+device.o: ../../source/mips/device.cpp ../../source/mips/device.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o device.o ../../source/mips/device.cpp
+
+msg.o: ../../source/mips/msg.cpp ../../source/mips/msg.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o msg.o ../../source/mips/msg.cpp
 
 ####### Install
 

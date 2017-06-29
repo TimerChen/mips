@@ -3,6 +3,7 @@
 
 #include "cpu.h"
 #include "instruction.h"
+#include "msg.h"
 
 #include "device.h"
 
@@ -10,10 +11,8 @@ class InsFetch : public Device
 {
 public:
 	InsFetch( CPU *cpuAdress );
-	void getIns();
+	MsgIF run();
 private:
-	short locked;
-	CPU *cpu;
 
 };
 

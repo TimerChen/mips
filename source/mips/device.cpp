@@ -1,6 +1,7 @@
 #include "device.h"
 
-Device::Device()
+Device::Device( CPU *cpuAdress )
+	:cpu(cpuAdress)
 {
 	locked = 0;
 }
@@ -8,5 +9,5 @@ bool Device::isFree()
 	{ return !locked; }
 void Device::lock()
 	{ locked = 1; }
-Device::unlock()
+void Device::unlock()
 	{ locked = 0; }

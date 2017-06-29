@@ -22,8 +22,8 @@ public:
 	void set_io(const std::string &file);
 
 	void write_reg(int idx, int val);
-	unsigned int read_reg(int idx,short len);
-	void write_mem(int idx, int val, short len);
+	unsigned int read_reg(int idx);
+	void write_mem(int idx, int val,short len);
 	unsigned int read_mem(int idx, short len);
 	unsigned int write_memStr(int idx, const std::string &str, bool zero=1);
 	std::string read_memStr(int idx);

@@ -9,7 +9,7 @@ CPU::CPU(unsigned int MEMSIZE)
 {
 	Memory = new char[MemSize];
 	top=0;
-	for(int i=0;i<35;++i)locked[i] = reg[i] = 0;
+	for(int i=0;i<35;++i) locked[i] = 0, reg[i] = 0;
 	reg[29] = MemSize-1;
 }
 

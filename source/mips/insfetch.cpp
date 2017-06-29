@@ -1,19 +1,19 @@
 #include "insfetch.h"
 
 InsFetch::InsFetch( CPU *cpuAdress )
-	:cpu(cpuAdress), Device()
+	:Device( cpuAdress )
 {
 }
-Msg0 InsFetch::getIns( )
+MsgIF InsFetch::run( )
 {
 	lock();
 	Instruction ins;
-	Msg0 msg;
+	MsgIF msg;
 	char *re = msg.str;
-	*((unsigned int*)(re + 0)) = read_mem( cpu->pc(), 4 );
+	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
-	*((unsigned int*)(re + 0)) = read_mem( cpu->pc(), 4 );
+	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
-	*((unsigned int*)(re + 0)) = read_mem( cpu->pc(), 4 );
+	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
 	return msg;
 }
