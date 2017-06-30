@@ -266,7 +266,7 @@ std::string InsInput::getWord
 		{ i++; type = 0; return std::string(str); }
 	else if( str[0] == '.' )
 		{ type = 1; return std::string(str+1); }
-	else if( 'a' <= str[0] && str[0] <= 'z' )
+	else if( ('a' <= str[0] && str[0] <= 'z') || str[0] == '_' )
 		{ type = ( isArg?3:2 ); return std::string(str); }
 	else if( '0' <= str[0] && str[0] <= '9' )
 		{ type = 4; return std::string(str); }
@@ -280,8 +280,9 @@ std::string InsInput::getWord
 }
 void InsInput::setTop()
 {
-	std::string line;
+	std::string line, word;
 	short type;
+	bool isData = 0;
 	int insNum = 0;
 	ptr = 0;
 	while( ptr < buffer.size() )
@@ -290,12 +291,23 @@ void InsInput::setTop()
 		unsigned int i = 0;
 		if( i < line.size() )
 		{
-			getWord(line, i, type);
+			word = getWord(line, i, type);
 			if(type == tokenType::inst)
 				insNum++;
+			else if( type == tokenType::pinst )
+			{
+				if( word == "data" )
+					isData = 1;
+				else if( word == "text" )
+					isData = 0;
+			}
+			else if( type == tokenType::label && !isData )
+			{
+				labels[word] = insNum * CPU::InsStep;
+			}
 		}
 	}
-	cpu->top = insNum * CPU::InsStep;
+	cpu->pcTop = cpu->top = insNum * CPU::InsStep;
 }
 void InsInput::putData()
 {
@@ -403,7 +415,7 @@ void InsInput::putInst()
 		unsigned int i = 0;
 		if( i < line.size() )
 		{
-			getWord(line, i, type);
+			word = getWord(line, i, type);
 			if( type == tokenType::pinst )
 			{
 				if( word == "data" )
@@ -413,7 +425,7 @@ void InsInput::putInst()
 			}
 			else if( type == tokenType::inst )
 			{
-				ins.opt = tokenType::inst;
+				ins.opt = insts[ word ];
 				std::string args[3];
 				int argsi[3];
 				short aType[3];
@@ -480,10 +492,7 @@ void InsInput::putInst()
 				*((Instruction*)(cpu->Memory + pcTop)) = ins;
 				pcTop += CPU::InsStep;
 			}
-			else if( type == tokenType::label && !isData )
-			{
-				labels[word] = pcTop;
-			}
+
 		}
 	}
 }
@@ -493,5 +502,6 @@ void InsInput::makeIns()
 	setTop();
 	putData();
 	putInst();
+	cpu->pc() = labels["main"];
 	clear();
 }

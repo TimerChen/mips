@@ -12,8 +12,9 @@ MsgIF InsFetch::run( )
 	char *re = msg.str;
 	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
-	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
+	*((unsigned int*)(re + 4)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
-	*((unsigned int*)(re + 0)) = cpu->read_mem( cpu->pc(), 4 );
+	*((unsigned int*)(re + 8)) = cpu->read_mem( cpu->pc(), 4 );
+	cpu->pc() += 4;
 	return msg;
 }

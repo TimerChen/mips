@@ -1,29 +1,29 @@
-	.data
-	.word 1
-_static_3:
-	.asciiz "\""
-	.align 2
-	.word 0
-
-	.data
-_buffer:
-	.word 0
-
 	.text
-_buffer_init:
-	li $a0, 256
-	li $v0, 9
-	syscall
-	sw $v0, _buffer
-	jr $ra
+calc:
+	add $t2 $t0 $t1
+	#go back
+	jr $31
 
-	.text
 main:
-	jal _buffer_init
-	add $fp, $zero, $sp
-	li $8, 4
-	add $9, $8, 1
-	mul $10, $9, 4
-	li $v0, 9
-	move $a0, $10
+	#read a
+	li $v0 5
+	syscall
+	move $t0 $v0
+
+	#read b
+	li $v0 5
+	syscall
+	move $t1 $v0
+
+	#use calc
+	jal calc
+
+	#output a+b
+	move $a0 $t2 #move
+	li $v0 1
+	syscall
+
+	#return 0
+	li $a0 0
+	li $v0 17
 	syscall

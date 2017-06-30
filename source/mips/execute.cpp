@@ -452,30 +452,30 @@ MsgEX Execute::run( const MsgID &msgID )
 			switch (msgID.arg[0]) {
 			case 1:
 				msgEX.opt = MsgEX::msgType::oInt;
-				msgEX.arg[0] = msgID.arg[0];
+				msgEX.arg[0] = msgID.arg[1];
 				break;
 			case 4:
 				msgEX.opt = MsgEX::msgType::oStr;
-				msgEX.arg[0] = msgID.arg[0];
+				msgEX.arg[0] = msgID.arg[1];
 				break;
 			case 5:
 				msgEX.opt = MsgEX::msgType::iInt;
 				break;
 			case 8:
 				msgEX.opt = MsgEX::msgType::iStr;
-				msgEX.arg[0] = msgID.arg[0];
-				msgEX.arg[1] = msgID.arg[1];
+				msgEX.arg[0] = msgID.arg[1];
+				msgEX.arg[1] = msgID.arg[2];
 				break;
 			case 9:
 				msgEX.opt = MsgEX::msgType::space;
-				msgEX.arg[0] = msgID.arg[0];
+				msgEX.arg[0] = msgID.arg[1];
 				break;
 			case 10:
 				msgEX.opt = MsgEX::msgType::exit;
 				break;
 			case 17:
 				msgEX.opt = MsgEX::msgType::exit0;
-				msgEX.arg[0] = msgID.arg[0];
+				msgEX.arg[0] = msgID.arg[1];
 				break;
 			}
 		}break;

@@ -23,13 +23,25 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 	MsgEX mex;
 	MsgMEM mmem;
 	MsgWB mwb;
+	int steps = 0;
 	do{
+		using namespace std;
+		steps++;
+		cerr << "\n[ Step: " << steps << " ]" << endl;
+		//cerr << "Instruction Fetch...";
 		mif = insFetch.run();
+		//cerr << "done\n" << "Instruction Decode...";
 		mid = insDecode.run( mif );
+		//cerr << "done\n" << "Execute...";
 		mex = execute.run( mid );
+		//cerr << "done\n" << "Memory Access...";
 		mmem = memAceess.run( mex );
+		//cerr << "done\n" << "Write Back...";
 		mwb = writeBack.run( mmem );
+		//cerr << "done\n";
 		if( mwb.opt == MsgWB::msgType::exit || mwb.opt == MsgWB::msgType::exit0 )
+			break;
+		if( cpu.pc() >= cpu.pcTop )
 			break;
 	}while(1);
 	if( mwb.opt == MsgWB::msgType::exit0 )

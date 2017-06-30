@@ -15,6 +15,7 @@ public:
 	~CPU();
 
 	const unsigned int MemSize;
+	unsigned int pcTop;
 	static const unsigned int InsStep;
 
 	unsigned int &pc();

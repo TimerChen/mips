@@ -26,11 +26,11 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 			case 8:
 				//read $a1
 				msgID.arg[2] = cpu->read_reg( 5 );
-				++msgID.narg;
+				msgID.narg++;
 			case 1:case 4:case 9:case 17:
 				//read $a0
 				msgID.arg[1] = cpu->read_reg( 4 );
-				++msgID.narg;
+				msgID.narg++;
 			break;
 			case 5:case 10:
 			break;
@@ -54,13 +54,13 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 	}else{
 		msgID.narg = 0;
 		if(ins.arg0 < 32)
-			msgID.arg[++msgID.narg] = cpu->read_reg(ins.arg0);
+			msgID.arg[msgID.narg++] = ins.arg0;
 		if(ins.arg1 < 32)
-			msgID.arg[++msgID.narg] = cpu->read_reg(ins.arg1);
+			msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg1);
 		if(ins.arg2 < 32)
-			msgID.arg[++msgID.narg] = cpu->read_reg(ins.arg2);
-		msgID.arg[++msgID.narg] = ins.arg3;
-		msgID.arg[++msgID.narg] = ins.arg4;
+			msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg2);
+		msgID.arg[msgID.narg++] = ins.arg3;
+		msgID.arg[msgID.narg++] = ins.arg4;
 
 	}
 	return msgID;
