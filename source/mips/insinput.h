@@ -6,13 +6,14 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <iostream>
 
 class InsInput
 {
 public:
 	InsInput(CPU *CpuAddress);
 
-	void initialize(const std::string &file);
+	void initialize( const std::string &File);
 private:
 
 	enum tokenType{label,pinst,inst,alabel,num,str,reg};
@@ -26,7 +27,7 @@ private:
 
 	void clear();
 	void clearBuffer();
-	void readFile(const std::string &file);
+	void readFile( const std::string &File );
 	std::string getLine();
 	std::string getWord(const std::string &line, unsigned int &i, short &type, const bool &isArg=0 );
 	int translate( const std::string &a, const short &type );

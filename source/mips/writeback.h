@@ -1,12 +1,15 @@
 #ifndef WRITEBACK_H
 #define WRITEBACK_H
 
+#include "msg.h"
+#include "device.h"
 
-class WriteBack
+
+class WriteBack : public Device
 {
 public:
-	WriteBack();
-	void write( int idx, int val );
+	WriteBack( CPU *cpuAdress );
+	MsgWB run( const MsgMEM &msgMEM );
 private:
 };
 

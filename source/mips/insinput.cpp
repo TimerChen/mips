@@ -130,10 +130,10 @@ void InsInput::initInst()
 	insts["syscall"]         = 50;
 }
 
-void InsInput::initialize(const std::string &file)
+void InsInput::initialize( const std::string &File )
 {
 	clear();
-	readFile( file );
+	readFile( File );
 	makeIns();
 }
 
@@ -149,11 +149,11 @@ void InsInput::clear()
 void InsInput::clearBuffer()
 	{ buffer = ""; ptr = 0; }
 
-void InsInput::readFile(const std::string &file)
+void InsInput::readFile( const std::string &File )
 {
 	char charBuffer[1024];
 	std::string str;
-	std::ifstream fin(file + ".s");
+	std::ifstream fin(File);
 	if(fin)
 	{
 		while(!fin.eof())

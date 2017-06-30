@@ -4,8 +4,9 @@
 
 const unsigned CPU::InsStep = 12;
 
-CPU::CPU(unsigned int MEMSIZE)
-	:MemSize(MEMSIZE)
+CPU::CPU(unsigned int MEMSIZE,
+		 std::istream *In, std::ostream *Out)
+	:MemSize(MEMSIZE), in(In), out(Out)
 {
 	Memory = new char[MemSize];
 	top=0;
@@ -27,6 +28,8 @@ unsigned int &CPU::hi()
 unsigned int &CPU::pc()
 { return reg[34]; }
 
+unsigned int &CPU::ptop()
+{ return top; }
 
 void CPU::write_reg( int idx, int val )
 { reg[idx] = val; }
@@ -56,4 +59,53 @@ unsigned int CPU::write_memStr( int idx, const std::string &str, bool zero )
 
 	memcpy( Memory+idx, str.c_str(), (zero + str.size()) );
 	return idx + (str.size() + zero);
+}
+std::string CPU::read_memStr(int idx)
+{
+	return std::string( Memory + idx );
+}
+
+int CPU::read_ioInt()
+{
+	int val;
+	(*in) >> val;
+	return val;
+}
+
+void CPU::write_ioInt( int val )
+{
+	(*out) << val;
+}
+
+int CPU::read_ioStr( int pos, unsigned int maxLen )
+{
+	std::string str;
+	(*in) >> str;
+	maxLen--;
+	for( unsigned int i=0; i<maxLen && i<str.size(); ++i )
+		Memory[pos++] = str[i];
+	Memory[pos++] = 0;
+	return pos;
+}
+void CPU::set_i(std::istream *i)
+{
+	in = i;
+}
+
+void CPU::set_o(std::ostream *o)
+{
+	out = o;
+}
+
+void CPU::write_ioStr( const std::string &str )
+{
+	(*out) << str;
+}
+
+int CPU::newSpace( int len )
+{
+	while( top % 4 )top++;
+	while( len-- )
+		Memory[top++] = 0;
+	return top;
 }

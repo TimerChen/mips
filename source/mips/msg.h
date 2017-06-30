@@ -22,13 +22,22 @@ public:
 	MsgEX();
 	enum msgType{ non,r1,r2lh,r2j,load,store,oInt,oStr,iInt,iStr,space,exit,exit0 };
 	short opt;
-	int arg[2];
+	int arg[3];
 };
 class MsgMEM
 {
 public:
 	MsgMEM();
-	int idx, arg;
+	enum msgType{ non,r1,r2lh,r2j,exit,exit0 };
+	short opt;
+	int arg[2];
+};
+class MsgWB
+{
+public:
+	MsgWB();
+	enum msgType{ non,exit,exit0 };
+	short opt;int arg;
 };
 
 #endif // MSG_H

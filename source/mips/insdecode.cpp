@@ -44,10 +44,12 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 	}else if( ins.opt == Instruction::Inst::jal ){
 		msgID.narg = 2;
 		msgID.arg[0] = ins.arg3;
+		//pc
 		msgID.arg[1] = cpu->read_reg(34);
 	}else if( ins.opt == Instruction::Inst::jalr ){
 		msgID.narg = 2;
 		msgID.arg[0] = cpu->read_reg(ins.arg0);
+		//pc
 		msgID.arg[1] = cpu->read_reg(34);
 	}else{
 		msgID.narg = 0;

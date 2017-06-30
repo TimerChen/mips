@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include <string>
+#include <iostream>
 
 class InsInput;
 
@@ -9,7 +10,8 @@ class CPU
 {
 	friend class InsInput;
 public:
-	CPU(unsigned int MEMSIZE = 32*1024*1024);
+	CPU(unsigned int MEMSIZE = 32*1024*1024,
+		std::istream *In = &std::cin, std::ostream *Out = &std::cout);
 	~CPU();
 
 	const unsigned int MemSize;
@@ -18,8 +20,10 @@ public:
 	unsigned int &pc();
 	unsigned int &hi();
 	unsigned int &lo();
+	unsigned int &ptop();
 
-	void set_io(const std::string &file);
+	void set_i(std::istream *i);
+	void set_o(std::ostream *o);
 
 	void write_reg(int idx, int val);
 	unsigned int read_reg(int idx);
@@ -29,9 +33,10 @@ public:
 	std::string read_memStr(int idx);
 
 	int read_ioInt();
-	void write_ioInt();
-	std::string read_ioStr();
-	void write_ioStr();
+	void write_ioInt( int val );
+	int read_ioStr( int pos, unsigned int maxLen );
+	void write_ioStr( const std::string &str );
+	int newSpace( int len );
 
 private:
 
@@ -39,7 +44,8 @@ private:
 	//lo = reg[32] hi = reg[33] pc = reg[34]
 	unsigned int reg[35],top;
 	bool locked[25];
-	std::string ioFile;
+	std::istream *in;
+	std::ostream *out;
 
 };
 

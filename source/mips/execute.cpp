@@ -407,6 +407,12 @@ MsgEX Execute::run( const MsgID &msgID )
 			else
 				//address + offset
 				msgEX.arg[1] = msgID.arg[1] + msgID.arg[2];
+			if( msgID.opt == Instruction::Inst::lb )
+				msgEX.arg[2] = 1;
+			else if( msgID.opt == Instruction::Inst::lh )
+				msgEX.arg[2] = 2;
+			else if( msgID.opt == Instruction::Inst::lw )
+				msgEX.arg[2] = 4;
 		}break;
 		case Instruction::Inst::sb:
 		case Instruction::Inst::sh:
@@ -420,6 +426,12 @@ MsgEX Execute::run( const MsgID &msgID )
 			else
 				//address + offset
 				msgEX.arg[1] = msgID.arg[1] + msgID.arg[2];
+			if( msgID.opt == Instruction::Inst::sb )
+				msgEX.arg[2] = 1;
+			else if( msgID.opt == Instruction::Inst::sh )
+				msgEX.arg[2] = 2;
+			else if( msgID.opt == Instruction::Inst::sw )
+				msgEX.arg[2] = 4;
 		}break;
 
 		case Instruction::Inst::move:

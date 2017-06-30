@@ -23,15 +23,15 @@ class Mips
 public:
 	Mips(unsigned int MEMSIZE = 32*1024*1024);
 	~Mips();
-	void run( const std::string &File );
+	void run( const std::string &File, std::istream *I = &std::cin, std::ostream *O = &std::cout );
 private:
 	CPU cpu;
 	InsInput insInput;
-//	InsFetch insFetch;
-//	InsDecode insDecode;
-//	Execute execute;
-//	MemAccess memAceess;
-//	WriteBack writeBack;
+	InsFetch insFetch;
+	InsDecode insDecode;
+	Execute execute;
+	MemAccess memAceess;
+	WriteBack writeBack;
 };
 
 

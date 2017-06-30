@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "mips.h"
 
@@ -9,6 +10,12 @@ Mips mips;
 int main(int argc, char *argv[])
 {
 	//cout << "Hello World!" << endl;
-	mips.run("test");
+	ifstream fin("test.in");
+	ofstream fout("test.out");
+	try{
+		mips.run(std::string("test.s"),&fin,&cout);
+	}catch( ... ){
+		std::cerr << "Some error ocurred." << std::endl;
+	}
 	return 0;
 }
