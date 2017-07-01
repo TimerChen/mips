@@ -51,10 +51,21 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 		msgID.arg[0] = cpu->read_reg(ins.arg0);
 		//pc
 		msgID.arg[1] = cpu->read_reg(34);
+	}else if( ins.opt == Instruction::Inst::jr ){
+		msgID.narg = 1;
+		msgID.arg[0] = cpu->read_reg(ins.arg0);
 	}else{
 		msgID.narg = 0;
 		if(ins.arg0 < 32)
-			msgID.arg[msgID.narg++] = ins.arg0;
+		{
+			if( (Instruction::Inst::beq <= ins.opt &&
+				 ins.opt <= Instruction::Inst::bltz) ||
+				(Instruction::Inst::sb <= ins.opt &&
+				 ins.opt <= Instruction::Inst::sw) )
+				msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg0);
+			else
+				msgID.arg[msgID.narg++] = ins.arg0;
+		}
 		if(ins.arg1 < 32)
 			msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg1);
 		if(ins.arg2 < 32)

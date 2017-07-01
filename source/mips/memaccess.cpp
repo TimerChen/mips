@@ -29,7 +29,7 @@ MsgMEM MemAccess::run( const MsgEX &msgEX )
 //		cpu->write_reg( 33, msgEX.arg[1] );
 		break;
 	case MsgEX::msgType::r2j:
-		msgMEM.opt = MsgMEM::msgType::r2lh;
+		msgMEM.opt = MsgMEM::msgType::r2j;
 		msgMEM.arg[0] = msgEX.arg[0];
 		msgMEM.arg[1] = msgEX.arg[1];
 //		cpu->write_reg( 34, msgEX.arg[0] );

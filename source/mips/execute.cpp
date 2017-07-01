@@ -218,11 +218,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::beq:
 		{
-			if( msgID.arg[1] == msgID.arg[2] )
+			if( msgID.arg[0] == msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -230,11 +230,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bne:
 		{
-			if( msgID.arg[1] != msgID.arg[2] )
+			if( msgID.arg[0] != msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -242,11 +242,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bge:
 		{
-			if( msgID.arg[1] >= msgID.arg[2] )
+			if( msgID.arg[0] >= msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -254,11 +254,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::ble:
 		{
-			if( msgID.arg[1] <= msgID.arg[2] )
+			if( msgID.arg[0] <= msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -266,11 +266,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bgt:
 		{
-			if( msgID.arg[1] > msgID.arg[2] )
+			if( msgID.arg[0] > msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -278,11 +278,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::blt:
 		{
-			if( msgID.arg[1] < msgID.arg[2] )
+			if( msgID.arg[0] < msgID.arg[1] )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[2];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -290,11 +290,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::beqz:
 		{
-			if( msgID.arg[1] == 0 )
+			if( msgID.arg[0] == 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -302,11 +302,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bnez:
 		{
-			if( msgID.arg[1] != 0 )
+			if( msgID.arg[0] != 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -314,11 +314,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bgez:
 		{
-			if( msgID.arg[1] >= 0 )
+			if( msgID.arg[0] >= 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -326,11 +326,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::blez:
 		{
-			if( msgID.arg[1] <= 0 )
+			if( msgID.arg[0] <= 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -338,11 +338,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bgtz:
 		{
-			if( msgID.arg[1] > 0 )
+			if( msgID.arg[0] > 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -350,11 +350,11 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::bltz:
 		{
-			if( msgID.arg[1] < 0 )
+			if( msgID.arg[0] < 0 )
 			{
 				msgEX.opt = MsgEX::msgType::r1;
 				msgEX.arg[0] = 34;
-				msgEX.arg[1] = msgID.arg[0];
+				msgEX.arg[1] = msgID.arg[1];
 			}else{
 				msgEX.opt = MsgEX::msgType::non;
 			}
@@ -401,7 +401,7 @@ MsgEX Execute::run( const MsgID &msgID )
 		{
 			msgEX.opt = MsgEX::msgType::load;
 			msgEX.arg[0] = msgID.arg[0];
-			if( msgID.narg == 2 )
+			if( msgID.narg == 3 )
 				//reg label
 				msgEX.arg[1] = msgID.arg[1];
 			else
@@ -420,7 +420,7 @@ MsgEX Execute::run( const MsgID &msgID )
 		{
 			msgEX.opt = MsgEX::msgType::store;
 			msgEX.arg[0] = msgID.arg[0];
-			if( msgID.narg == 2 )
+			if( msgID.narg == 3 )
 				//reg label
 				msgEX.arg[1] = msgID.arg[1];
 			else

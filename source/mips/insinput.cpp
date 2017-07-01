@@ -1,5 +1,6 @@
 #include "insinput.h"
 #include "instruction.h"
+#include "debug.h"
 
 #include <iostream>
 #include <fstream>
@@ -194,6 +195,8 @@ int InsInput::translate( const std::string &a, const short &type )
 			re = insts[ a ];
 			break;
 		case tokenType::alabel:
+			if( labels.find(a) == labels.end() )
+				throw(0);
 			re = labels[ a ];
 			break;
 		case tokenType::num:
@@ -214,16 +217,18 @@ std::string InsInput::getWord
 	 short &type, const bool &isArg )
 {
 	while(i < line.size() &&
-		  (line[i] == ' '|| line[i] == '\t' || line[i] == '\0') ) ++i;
+		  (line[i] == ' ' || line[i] == '\t' || line[i] == '\0' ||
+		   line[i] == '(' || line[i] == ',') ) ++i;
 	char str[64];
 	int j = 0;
 	bool isSp=0,isStr=0;
 	type = -1;
 	while( i < line.size() &&
 		 ( isStr ||
-		   ( line[i] != ')' && line[i] != ' ' && line[i] != ':'
-			&& line[i] != ',' && line[i] != '\t'
-			&& line[i] != '\0' && line[i] != '#' )
+		   ( line[i] != '(' && line[i] != ')' &&
+			 line[i] != ' ' && line[i] != ':' &&
+			 line[i] != ',' && line[i] != '\t' &&
+			 line[i] != '\0' && line[i] != '#' )
 		 ) )
 	{
 		str[j++] = line[i];
@@ -268,7 +273,7 @@ std::string InsInput::getWord
 		{ type = 1; return std::string(str+1); }
 	else if( ('a' <= str[0] && str[0] <= 'z') || str[0] == '_' )
 		{ type = ( isArg?3:2 ); return std::string(str); }
-	else if( '0' <= str[0] && str[0] <= '9' )
+	else if( ('0' <= str[0] && str[0] <= '9') || str[0] == '-' || str[0] == '+' )
 		{ type = 4; return std::string(str); }
 	else if( str[0] == '\"' )
 		{ type = 5; return std::string(str); }
@@ -320,6 +325,7 @@ void InsInput::putData()
 	while( ptr < buffer.size() )
 	{
 		line = getLine();
+
 		unsigned int i = 0;
 		if( i < line.size() )
 		{
@@ -409,9 +415,19 @@ void InsInput::putInst()
 	int pcTop = 0;
 	Instruction ins;
 	ptr = 0;
+
+	int lineNumber = 0;
+
+	bool debug_lineInformation = 1;
+
+
 	while( ptr < buffer.size() )
 	{
+		lineNumber++;
+		ins = Instruction();
 		line = getLine();
+
+		mipsDebug::lineContent[ lineNumber ] = line;
 		unsigned int i = 0;
 		if( i < line.size() )
 		{
@@ -425,6 +441,9 @@ void InsInput::putInst()
 			}
 			else if( type == tokenType::inst )
 			{
+				mipsDebug::lineNumber[ pcTop ] = lineNumber;
+				if( insts.find(word) == insts.end() )
+					throw(0);
 				ins.opt = insts[ word ];
 				std::string args[3];
 				int argsi[3];
@@ -480,7 +499,7 @@ void InsInput::putInst()
 						//aType[2] == tokenType::alabel
 						//aType[2] == tokenType::num
 						else
-							ins.arg3 = argsi[3];
+							ins.arg3 = argsi[2];
 					}else{
 						ins.arg3 = argsi[1];
 						if( aType[2] == tokenType::reg )
@@ -490,6 +509,17 @@ void InsInput::putInst()
 					}
 				}
 				*((Instruction*)(cpu->Memory + pcTop)) = ins;
+				if( debug_lineInformation )
+				{
+					std::cerr << mipsDebug::nowLine( pcTop ) << std::endl;
+					std::cerr << mipsDebug::opt_msgid[ins.opt] << "\t" << (int)ins.arg0 << " "
+							  << (int)ins.arg1 << " " << (int)ins.arg2 << " "
+							  << (int)ins.arg3 << " " << (int)ins.arg4 << " "
+							  << std::endl;
+					for(int ii=0;ii<12;++ii)
+						std::cerr << (int)cpu->Memory[pcTop+ii] << " ";
+					std::cerr << std::endl;
+				}
 				pcTop += CPU::InsStep;
 			}
 

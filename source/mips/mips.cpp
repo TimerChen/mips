@@ -1,5 +1,7 @@
 #include "mips.h"
 
+#include "debug.h"
+
 Mips::Mips(unsigned int MEMSIZE)
 	:cpu(MEMSIZE),insInput(&cpu),
 	  insFetch(&cpu), insDecode(&cpu), execute(&cpu),
@@ -15,7 +17,9 @@ Mips::~Mips()
 
 void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 {
+	mipsDebug::initialize();
 	insInput.initialize( File );
+
 	cpu.set_i(I);
 	cpu.set_o(O);
 	MsgIF mif;
@@ -24,20 +28,39 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 	MsgMEM mmem;
 	MsgWB mwb;
 	int steps = 0;
+	short stepInformation = 1;//, stepOut = 1;
 	do{
 		using namespace std;
+		int nowPc = cpu.pc();
+
 		steps++;
-		cerr << "\n[ Step: " << steps << " ]" << endl;
-		//cerr << "Instruction Fetch...";
 		mif = insFetch.run();
-		//cerr << "done\n" << "Instruction Decode...";
 		mid = insDecode.run( mif );
-		//cerr << "done\n" << "Execute...";
 		mex = execute.run( mid );
-		//cerr << "done\n" << "Memory Access...";
 		mmem = memAceess.run( mex );
-		//cerr << "done\n" << "Write Back...";
 		mwb = writeBack.run( mmem );
+
+		if( stepInformation )
+		{
+			cerr << "\n[ Step: " << steps << " ]" << endl;
+			cerr << mipsDebug::nowLine( nowPc ) << endl;
+
+			//cerr << "Instruction Fetch:\n";
+
+			cerr << mipsDebug::tostr(mif) << endl;
+
+			//cerr << "done\n" << "Instruction Decode:\n";
+			cerr << mipsDebug::tostr(mid) << endl;
+
+			//cerr << "done\n" << "Execute:\n";
+			cerr << mipsDebug::tostr(mex) << endl;
+
+			//cerr << "done\n" << "Memory Access:\n";
+			cerr << mipsDebug::tostr(mmem) << endl;
+
+			//cerr << "done\n" << "Write Back:\n";
+			cerr << mipsDebug::tostr(mwb) << endl;
+		}
 		//cerr << "done\n";
 		if( mwb.opt == MsgWB::msgType::exit || mwb.opt == MsgWB::msgType::exit0 )
 			break;
