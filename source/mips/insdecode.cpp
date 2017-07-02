@@ -3,7 +3,7 @@
 #include "instruction.h"
 
 InsDecode::InsDecode( CPU *cpuAdress )
-	:Device( cpuAdress )
+	:Stage( cpuAdress )
 {
 
 }
@@ -76,7 +76,41 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 			msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg2);
 		msgID.arg[msgID.narg++] = ins.arg3;
 		msgID.arg[msgID.narg++] = ins.arg4;
-
 	}
+
+	//lock regs
+
+	if( Instruction::Inst::syscall == ins.opt )
+	{
+		//$v0
+		switch( msgID.arg[0] )
+		{
+			case 5:case 9:
+				//lock $v0
+				cpu->lockReg( 2 );
+			break;
+		}
+	}else{
+		if( (Instruction::Inst::add <= ins.opt &&
+			 ins.opt <= Instruction::Inst::sne) ||
+			(Instruction::Inst::la <= ins.opt &&
+			ins.opt <= Instruction::Inst::lw) ||
+			(Instruction::Inst::move <= ins.opt &&
+			ins.opt <= Instruction::Inst::mflo) )
+			cpu->lockReg( ins.arg0 );
+
+		if(Instruction::Inst::b <= ins.opt &&
+		   ins.opt <= Instruction::Inst::jalr)
+			cpu->lockReg( 34 );
+		if(Instruction::Inst::jal <= ins.opt &&
+			ins.opt <= Instruction::Inst::jalr)
+			cpu->lockReg( 31 );
+
+		if( Instruction::Inst::mul2 <= ins.opt &&
+			ins.opt <= Instruction::Inst::divu2 )
+			cpu->lockReg( 32 ), cpu->lockReg( 33 );
+	}
+
+
 	return msgID;
 }

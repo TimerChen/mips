@@ -1,7 +1,7 @@
 #include "writeback.h"
 
 WriteBack::WriteBack( CPU *cpuAdress )
-	:Device( cpuAdress )
+	:Stage( cpuAdress )
 {
 
 }
@@ -17,16 +17,21 @@ MsgWB WriteBack::run( const MsgMEM &msgMEM )
 	case MsgMEM::msgType::r1:
 		//non
 		cpu->write_reg( msgMEM.arg[0], msgMEM.arg[1] );
+		cpu->unlockReg( msgMEM.arg[0] );
 		break;
 	case MsgMEM::msgType::r2lh:
 		//non
 		cpu->write_reg( 32, msgMEM.arg[0] );
 		cpu->write_reg( 33, msgMEM.arg[1] );
+		cpu->unlockReg( 32 );
+		cpu->unlockReg( 33 );
 		break;
 	case MsgMEM::msgType::r2j:
 		//non
 		cpu->write_reg( 34, msgMEM.arg[0] );
 		cpu->write_reg( 31, msgMEM.arg[1] );
+		cpu->unlockReg( 34 );
+		cpu->unlockReg( 31 );
 		break;
 	case MsgMEM::msgType::exit:
 		msgWB.opt = MsgWB::msgType::exit;

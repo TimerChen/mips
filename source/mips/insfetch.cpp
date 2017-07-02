@@ -1,12 +1,16 @@
 #include "insfetch.h"
 
+#include "error.h"
+
 InsFetch::InsFetch( CPU *cpuAdress )
-	:Device( cpuAdress )
+	:Stage( cpuAdress )
 {
 }
 MsgIF InsFetch::run( )
 {
-	lock();
+	if( !isFree() )
+		throw( StageLocked() );
+
 	Instruction ins;
 	MsgIF msg;
 	char *re = msg.str;

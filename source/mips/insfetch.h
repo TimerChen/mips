@@ -5,9 +5,9 @@
 #include "instruction.h"
 #include "msg.h"
 
-#include "device.h"
+#include "stage.h"
 
-class InsFetch : public Device
+class InsFetch : public Stage
 {
 public:
 	InsFetch( CPU *cpuAdress );

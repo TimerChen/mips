@@ -1,11 +1,11 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-#include "device.h"
+#include "stage.h"
 #include "instruction.h"
 #include "msg.h"
 
-class Execute : public Device
+class Execute : public Stage
 {
 public:
 	Execute( CPU *cpuAdress );

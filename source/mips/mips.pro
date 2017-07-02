@@ -15,9 +15,10 @@ SOURCES += main.cpp \
     writeback.cpp \
     execute.cpp \
     mips.cpp \
-    device.cpp \
+    stage.cpp \
     msg.cpp \
-    debug.cpp
+    debug.cpp \
+    error.cpp
 
 HEADERS += \
     mips.h \
@@ -29,6 +30,7 @@ HEADERS += \
     memaccess.h \
     writeback.h \
     execute.h \
-    device.h \
+    stage.h \
     msg.h \
-    debug.h
+    debug.h \
+    error.h

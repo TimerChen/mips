@@ -2,10 +2,10 @@
 #define WRITEBACK_H
 
 #include "msg.h"
-#include "device.h"
+#include "stage.h"
 
 
-class WriteBack : public Device
+class WriteBack : public Stage
 {
 public:
 	WriteBack( CPU *cpuAdress );

@@ -39,12 +39,20 @@ public:
 	void write_ioStr( const std::string &str );
 	int newSpace( int len );
 
+	void lockReg( int idx );
+	void unlockReg( int idx );
+	void lockPc();
+	void unlockPc();
+	bool isFree_pc();
+
+
 private:
 
 	char *Memory;
 	//lo = reg[32] hi = reg[33] pc = reg[34]
 	unsigned int reg[35],top;
-	bool locked[25];
+	bool locked[35];
+	short locked_pc;
 	std::istream *in;
 	std::ostream *out;
 

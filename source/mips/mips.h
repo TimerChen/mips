@@ -16,6 +16,7 @@
 #include "execute.h"
 #include "memaccess.h"
 #include "writeback.h"
+#include "msg.h"
 
 
 class Mips
@@ -32,6 +33,25 @@ private:
 	Execute execute;
 	MemAccess memAceess;
 	WriteBack writeBack;
+
+	MsgIF msgif;
+	MsgID msgid;
+	MsgEX msgex;
+	MsgMEM msgmem;
+	MsgWB msgwb;
+
+	bool ifFull, idFull, exFull, memFull, wbFull;
+
+	void store( const MsgIF &msg );
+	void store( const MsgID &msg );
+	void store( const MsgEX &msg );
+	void store( const MsgMEM &msg );
+	void store( const MsgWB &msg );
+
+	void clearLine();
+	void lock_pc( const MsgEX &msg );
+	void unlock_pc( const MsgMEM &msg );
+
 };
 
 

@@ -1,5 +1,6 @@
 #include "cpu.h"
 
+#include "error.h"
 #include <cstring>
 
 const unsigned CPU::InsStep = 12;
@@ -34,7 +35,11 @@ unsigned int &CPU::ptop()
 void CPU::write_reg( int idx, int val )
 { reg[idx] = val; }
 unsigned int  CPU::read_reg( int idx )
-{ return reg[idx]; }
+{
+	if( locked[idx] )
+		throw( RegLocked() );
+	return reg[idx];
+}
 
 
 void CPU::write_mem(int idx, int val, short len)
@@ -108,4 +113,33 @@ int CPU::newSpace( int len )
 	while( len-- )
 		Memory[top++] = 0;
 	return top;
+}
+
+
+void CPU::lockReg( int idx )
+{
+	if( locked[ idx ] )
+		throw( 0 );
+	locked[idx] = 1;
+}
+
+void CPU::unlockReg( int idx )
+{
+	if( !locked[ idx ] )
+		throw( 0 );
+	locked[idx] = 0;
+}
+
+void CPU::lockPc()
+{
+	locked_pc++;
+}
+
+void CPU::unlockPc()
+{
+	locked_pc--;
+}
+bool CPU::isFree_pc()
+{
+	return !locked_pc;
 }
