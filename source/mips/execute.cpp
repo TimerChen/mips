@@ -63,12 +63,11 @@ MsgEX Execute::run( const MsgID &msgID )
 			typedef int Data;
 			long long tmp;
 			msgEX.opt = MsgEX::msgType::r2lh;
-			msgEX.arg[0] = msgID.arg[0];
-			tmp = (Data)msgID.arg[1] * (Data)msgID.arg[2];
+			tmp = (long long)((Data)msgID.arg[0]) * (Data)msgID.arg[1];
 			//hi
-			msgEX.arg[1] = *((Data*)(&tmp));
+			msgEX.arg[1] = *((Data*)(&tmp+4));
 			//lo
-			msgEX.arg[0] = *((Data*)(&tmp+4));
+			msgEX.arg[0] = *((Data*)(&tmp));
 		}break;
 
 		case Instruction::Inst::mulu2:
@@ -76,41 +75,38 @@ MsgEX Execute::run( const MsgID &msgID )
 			typedef unsigned int Data;
 			unsigned long long tmp;
 			msgEX.opt = MsgEX::msgType::r2lh;
-			msgEX.arg[0] = msgID.arg[0];
-			tmp = (Data)msgID.arg[1] * (Data)msgID.arg[2];
+			tmp = (unsigned long long)((Data)msgID.arg[0]) * (Data)msgID.arg[1];
 			//hi
-			msgEX.arg[1] = *((Data*)(&tmp));
+			msgEX.arg[1] = *((Data*)(&tmp+4));
 			//lo
-			msgEX.arg[0] = *((Data*)(&tmp+4));
+			msgEX.arg[0] = *((Data*)(&tmp));
 		}break;
 
 		case Instruction::Inst::div2:
 		{
 			typedef int Data;
 			msgEX.opt = MsgEX::msgType::r2lh;
-			msgEX.arg[0] = msgID.arg[0];
 			//lo
-			*((Data*)(&msgEX.arg[0])) = (Data)msgID.arg[1] / (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[0])) = (Data)msgID.arg[0] / (Data)msgID.arg[1];
 			//hi
-			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] % (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[0] % (Data)msgID.arg[1];
 		}break;
 
 		case Instruction::Inst::divu2:
 		{
 			typedef unsigned int Data;
 			msgEX.opt = MsgEX::msgType::r2lh;
-			msgEX.arg[0] = msgID.arg[0];
 			//lo
-			*((Data*)(&msgEX.arg[0])) = (Data)msgID.arg[1] / (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[0])) = (Data)msgID.arg[0] / (Data)msgID.arg[1];
 			//hi
-			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] % (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[0] % (Data)msgID.arg[1];
 		}break;
 		case Instruction::Inst::xor0:
 		{
 			typedef int Data;
 			msgEX.opt = MsgEX::msgType::r1;
 			msgEX.arg[0] = msgID.arg[0];
-			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] xor (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] ^ (Data)msgID.arg[2];
 		}break;
 
 		case Instruction::Inst::xoru:
@@ -118,7 +114,7 @@ MsgEX Execute::run( const MsgID &msgID )
 			typedef unsigned int Data;
 			msgEX.opt = MsgEX::msgType::r1;
 			msgEX.arg[0] = msgID.arg[0];
-			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] xor (Data)msgID.arg[2];
+			*((Data*)(&msgEX.arg[1])) = (Data)msgID.arg[1] ^ (Data)msgID.arg[2];
 		}break;
 
 		case Instruction::Inst::neg:

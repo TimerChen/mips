@@ -63,10 +63,11 @@ MsgMEM MemAccess::run( const MsgEX &msgEX )
 		break;
 	case MsgEX::msgType::iStr:
 		//non
-		cpu->ptop() = cpu->read_ioStr( msgEX.arg[0], msgEX.arg[1] );
+		cpu->read_ioStr( msgEX.arg[0], msgEX.arg[1] );
 		break;
 	case MsgEX::msgType::space:
 		//non
+		msgMEM.opt = MsgMEM::msgType::r1;
 		msgMEM.arg[0] = 2;
 		msgMEM.arg[1] = cpu->ptop();
 		cpu->ptop() = cpu->newSpace( msgEX.arg[0] );

@@ -22,6 +22,9 @@ std::map<int, std::string>
 std::map<int, int>
 	mipsDebug::lineNumber;
 
+bool mipsDebug::debugMode = 0,
+	 mipsDebug::stepInformation = 0, mipsDebug::stepInformation_detail = 0,
+	 mipsDebug::insInputInformation = 0, mipsDebug::returnInformation = 0;
 
 std::string mipsDebug::tostr( const MsgIF &msg )
 {

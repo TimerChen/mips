@@ -42,14 +42,14 @@ void CPU::write_mem(int idx, int val, short len)
 	char tmp[4];
 	*((int*)(tmp)) = val;
 	for( int i=0; i<len; ++i )
-		Memory[idx+i] = tmp[4-len+i];
+		Memory[idx+i] = tmp[i];
 }
 unsigned int CPU::read_mem(int idx, short len)
 {
 	char tmp[4]={};
 	int val = 0;
 	for( int i=0; i<len; ++i )
-		tmp[4-len+i] = Memory[idx+i];
+		tmp[i] = Memory[idx+i];
 	val = *((int*)(tmp));
 	return val;
 }

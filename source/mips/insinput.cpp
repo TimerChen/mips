@@ -30,21 +30,21 @@ void InsInput::initRegs()
 		ss >> str;
 		regs[str] = j++;
 	}
-	for(int i = 0; i < 3; ++i )
+	for(int i = 0; i < 4; ++i )
 	{
 		ss.clear();
 		ss << "$a" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
-	for(int i = 0; i < 7; ++i )
+	for(int i = 0; i < 8; ++i )
 	{
 		ss.clear();
 		ss << "$t" << i;
 		ss >> str;
 		regs[str] = j++;
 	}
-	for(int i = 0; i < 7; ++i )
+	for(int i = 0; i < 8; ++i )
 	{
 		ss.clear();
 		ss << "$s" << i;
@@ -58,6 +58,7 @@ void InsInput::initRegs()
 		ss >> str;
 		regs[str] = j++;
 	}
+	j = 28;
 	regs["$gp"] = j++;
 	regs["$sp"] = j++;
 	regs["$fp"] = j++;
@@ -219,7 +220,7 @@ std::string InsInput::getWord
 	while(i < line.size() &&
 		  (line[i] == ' ' || line[i] == '\t' || line[i] == '\0' ||
 		   line[i] == '(' || line[i] == ',') ) ++i;
-	char str[64];
+	char str[1024];
 	int j = 0;
 	bool isSp=0,isStr=0;
 	type = -1;
@@ -418,7 +419,6 @@ void InsInput::putInst()
 
 	int lineNumber = 0;
 
-	bool debug_lineInformation = 1;
 
 
 	while( ptr < buffer.size() )
@@ -509,7 +509,7 @@ void InsInput::putInst()
 					}
 				}
 				*((Instruction*)(cpu->Memory + pcTop)) = ins;
-				if( debug_lineInformation )
+				if( mipsDebug::insInputInformation )
 				{
 					std::cerr << mipsDebug::nowLine( pcTop ) << std::endl;
 					std::cerr << mipsDebug::opt_msgid[ins.opt] << "\t" << (int)ins.arg0 << " "

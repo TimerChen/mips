@@ -22,6 +22,10 @@ public:
 	static std::map<int, int>
 		lineNumber;
 
+	static bool debugMode,
+				stepInformation, stepInformation_detail,
+				insInputInformation, returnInformation;
+
 	static std::string tostr( const MsgIF &msg );
 	static std::string tostr( const MsgID &msg );
 	static std::string tostr( const MsgEX &msg );
