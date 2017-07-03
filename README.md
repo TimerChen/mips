@@ -56,7 +56,7 @@ Five-stage version passed all the test points.
 
 * But it totally used 3m20s.
 
-Removed all the throw-catch statement.
+Removed all the throw-catch statements.
 
 * It now totally used 8s.
 
