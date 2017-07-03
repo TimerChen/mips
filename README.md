@@ -26,6 +26,8 @@ A MIPS Simulator.
 > * [Frank的专栏
 ](http://blog.csdn.net/csxiaoshui/article/details/44202129)
 >
+> * [256code](http://www.cnblogs.com/haippy/p/3235560.html)
+>
 > C++11 lambda function
 >
 > * http://www.cnblogs.com/pzhfei/archive/2013/01/14/lambda_expression.html
