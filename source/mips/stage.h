@@ -1,12 +1,12 @@
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef Stage_H
+#define Stage_H
 
 #include "cpu.h"
 
-class Device
+class Stage
 {
 public:
-	Device( CPU *cpuAdress );
+	Stage( CPU *cpuAdress );
 	bool isFree();
 	void lock();
 	void unlock();
@@ -17,4 +17,4 @@ private:
 	bool locked;
 };
 
-#endif // DEVICE_H
+#endif // Stage_H

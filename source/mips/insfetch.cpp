@@ -1,12 +1,16 @@
 #include "insfetch.h"
 
+#include "error.h"
+
 InsFetch::InsFetch( CPU *cpuAdress )
-	:Device( cpuAdress )
+	:Stage( cpuAdress )
 {
 }
 MsgIF InsFetch::run( )
 {
-	lock();
+	if( !cpu->isFree_pc() )
+		throw( StageLocked() );
+
 	Instruction ins;
 	MsgIF msg;
 	char *re = msg.str;
@@ -16,5 +20,6 @@ MsgIF InsFetch::run( )
 	cpu->pc() += 4;
 	*((unsigned int*)(re + 8)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
+	msg.add = cpu->pc();
 	return msg;
 }

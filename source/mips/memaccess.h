@@ -1,10 +1,10 @@
 #ifndef MEMACCESS_H
 #define MEMACCESS_H
 
-#include "device.h"
+#include "stage.h"
 #include "msg.h"
 
-class MemAccess : public Device
+class MemAccess : public Stage
 {
 public:
 	MemAccess( CPU* cpuAdress );

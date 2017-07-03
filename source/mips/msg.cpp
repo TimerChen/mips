@@ -2,6 +2,7 @@
 
 MsgIF::MsgIF(const char *Str)
 {
+	add = 0;
 	for( int i=0; i<12; ++i )
 		str[i] = Str[i];
 }

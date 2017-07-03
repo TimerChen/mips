@@ -1,11 +1,11 @@
 #ifndef INSDECODE_H
 #define INSDECODE_H
 
-#include "device.h"
+#include "stage.h"
 #include "instruction.h"
 #include "msg.h"
 
-class InsDecode : public Device
+class InsDecode : public Stage
 {
 public:
 	InsDecode( CPU *cpuAdress );

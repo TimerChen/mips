@@ -1,7 +1,7 @@
 #include "execute.h"
 
 Execute::Execute( CPU* cpuAdress )
-	:Device( cpuAdress )
+	:Stage( cpuAdress )
 {
 
 }
@@ -477,5 +477,8 @@ MsgEX Execute::run( const MsgID &msgID )
 		}break;
 
 	}
+
+
+
 	return msgEX;
 }

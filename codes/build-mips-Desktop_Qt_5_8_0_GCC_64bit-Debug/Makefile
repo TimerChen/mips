@@ -58,9 +58,10 @@ SOURCES       = ../../source/mips/main.cpp \
 		../../source/mips/writeback.cpp \
 		../../source/mips/execute.cpp \
 		../../source/mips/mips.cpp \
-		../../source/mips/device.cpp \
+		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
-		../../source/mips/debug.cpp 
+		../../source/mips/debug.cpp \
+		../../source/mips/error.cpp 
 OBJECTS       = main.o \
 		insinput.o \
 		cpu.o \
@@ -71,9 +72,10 @@ OBJECTS       = main.o \
 		writeback.o \
 		execute.o \
 		mips.o \
-		device.o \
+		stage.o \
 		msg.o \
-		debug.o
+		debug.o \
+		error.o
 DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/linux.conf \
@@ -247,9 +249,10 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		memaccess.h \
 		writeback.h \
 		execute.h \
-		device.h \
+		stage.h \
 		msg.h \
-		debug.h ../../source/mips/main.cpp \
+		debug.h \
+		error.h ../../source/mips/main.cpp \
 		../../source/mips/insinput.cpp \
 		../../source/mips/cpu.cpp \
 		../../source/mips/instruction.cpp \
@@ -259,9 +262,10 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../source/mips/writeback.cpp \
 		../../source/mips/execute.cpp \
 		../../source/mips/mips.cpp \
-		../../source/mips/device.cpp \
+		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
-		../../source/mips/debug.cpp
+		../../source/mips/debug.cpp \
+		../../source/mips/error.cpp
 QMAKE_TARGET  = mips
 DESTDIR       = 
 TARGET        = mips
@@ -653,16 +657,19 @@ main.o: ../../source/mips/main.cpp ../../source/mips/mips.h \
 		../../source/mips/insinput.h \
 		../../source/mips/insfetch.h \
 		../../source/mips/msg.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/insdecode.h \
 		../../source/mips/execute.h \
 		../../source/mips/memaccess.h \
-		../../source/mips/writeback.h
+		../../source/mips/writeback.h \
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../source/mips/main.cpp
 
 insinput.o: ../../source/mips/insinput.cpp ../../source/mips/insinput.h \
 		../../source/mips/cpu.h \
-		../../source/mips/instruction.h
+		../../source/mips/instruction.h \
+		../../source/mips/debug.h \
+		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insinput.o ../../source/mips/insinput.cpp
 
 cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h
@@ -675,30 +682,31 @@ insfetch.o: ../../source/mips/insfetch.cpp ../../source/mips/insfetch.h \
 		../../source/mips/cpu.h \
 		../../source/mips/instruction.h \
 		../../source/mips/msg.h \
-		../../source/mips/device.h
+		../../source/mips/stage.h \
+		../../source/mips/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insfetch.o ../../source/mips/insfetch.cpp
 
 insdecode.o: ../../source/mips/insdecode.cpp ../../source/mips/insdecode.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
 		../../source/mips/instruction.h \
 		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insdecode.o ../../source/mips/insdecode.cpp
 
 memaccess.o: ../../source/mips/memaccess.cpp ../../source/mips/memaccess.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
 		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o memaccess.o ../../source/mips/memaccess.cpp
 
 writeback.o: ../../source/mips/writeback.cpp ../../source/mips/writeback.h \
 		../../source/mips/msg.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/cpu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o writeback.o ../../source/mips/writeback.cpp
 
 execute.o: ../../source/mips/execute.cpp ../../source/mips/execute.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
 		../../source/mips/instruction.h \
 		../../source/mips/msg.h
@@ -710,16 +718,17 @@ mips.o: ../../source/mips/mips.cpp ../../source/mips/mips.h \
 		../../source/mips/insinput.h \
 		../../source/mips/insfetch.h \
 		../../source/mips/msg.h \
-		../../source/mips/device.h \
+		../../source/mips/stage.h \
 		../../source/mips/insdecode.h \
 		../../source/mips/execute.h \
 		../../source/mips/memaccess.h \
-		../../source/mips/writeback.h
+		../../source/mips/writeback.h \
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mips.o ../../source/mips/mips.cpp
 
-device.o: ../../source/mips/device.cpp ../../source/mips/device.h \
+stage.o: ../../source/mips/stage.cpp ../../source/mips/stage.h \
 		../../source/mips/cpu.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o device.o ../../source/mips/device.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stage.o ../../source/mips/stage.cpp
 
 msg.o: ../../source/mips/msg.cpp ../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o msg.o ../../source/mips/msg.cpp
@@ -728,6 +737,9 @@ debug.o: ../../source/mips/debug.cpp ../../source/mips/debug.h \
 		../../source/mips/msg.h \
 		../../source/mips/instruction.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug.o ../../source/mips/debug.cpp
+
+error.o: ../../source/mips/error.cpp ../../source/mips/error.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o error.o ../../source/mips/error.cpp
 
 ####### Install
 

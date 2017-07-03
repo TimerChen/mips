@@ -5,6 +5,8 @@
 
 #include <map>
 
+class CPU;
+
 class mipsDebug
 {
 public:
@@ -24,7 +26,8 @@ public:
 
 	static bool debugMode,
 				stepInformation, stepInformation_detail,
-				insInputInformation, returnInformation;
+				insInputInformation, returnInformation,
+				lockInformation, lockInformation_detail;
 
 	static std::string tostr( const MsgIF &msg );
 	static std::string tostr( const MsgID &msg );
@@ -33,6 +36,7 @@ public:
 	static std::string tostr( const MsgWB &msg );
 
 	static std::string nowLine( int pc );
+	static std::string regLocks( CPU *cpu );
 
 };
 
