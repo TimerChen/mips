@@ -59,6 +59,12 @@ unsigned int CPU::read_mem(int idx, short len)
 	return val;
 }
 
+bool CPU::isFree( int idx )
+{
+	return !locked[ idx ];
+}
+
+
 unsigned int CPU::write_memStr( int idx, const std::string &str, bool zero )
 {
 

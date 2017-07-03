@@ -23,8 +23,8 @@ std::string getString( iostream& io )
 int main(int argc, char *argv[])
 {
 	//cout << "Hello World!" << endl;
-	string name = "heapsort-5100379110-daibo";
-	//string name = "test";
+	//string name = "heapsort-5100379110-daibo";
+	string name = "test";
 	ifstream fin( name + ".in" );
 	ofstream fout( name + ".out" );
 	stringstream sout;

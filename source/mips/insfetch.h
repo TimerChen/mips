@@ -12,6 +12,7 @@ class InsFetch : public Stage
 public:
 	InsFetch( CPU *cpuAdress );
 	MsgIF run();
+	bool isFree();
 private:
 
 };

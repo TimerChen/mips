@@ -6,6 +6,11 @@ InsFetch::InsFetch( CPU *cpuAdress )
 	:Stage( cpuAdress )
 {
 }
+bool InsFetch::isFree()
+{
+	return cpu->isFree_pc();
+}
+
 MsgIF InsFetch::run( )
 {
 	if( !cpu->isFree_pc() )
