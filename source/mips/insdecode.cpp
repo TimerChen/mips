@@ -47,12 +47,14 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 		msgID.narg = 2;
 		msgID.arg[0] = ins.arg3;
 		//pc
-		msgID.arg[1] = cpu->read_reg(34);
+		//msgID.arg[1] = cpu->read_reg(34);
+		msgID.arg[1] = msgIF.add;
 	}else if( ins.opt == Instruction::Inst::jalr ){
 		msgID.narg = 2;
 		msgID.arg[0] = cpu->read_reg(ins.arg0);
 		//pc
-		msgID.arg[1] = cpu->read_reg(34);
+		//msgID.arg[1] = cpu->read_reg(34);
+		msgID.arg[1] = msgIF.add;
 	}else if( ins.opt == Instruction::Inst::jr ){
 		msgID.narg = 1;
 		msgID.arg[0] = cpu->read_reg(ins.arg0);

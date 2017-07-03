@@ -8,7 +8,7 @@ InsFetch::InsFetch( CPU *cpuAdress )
 }
 MsgIF InsFetch::run( )
 {
-	if( !isFree() )
+	if( !cpu->isFree_pc() )
 		throw( StageLocked() );
 
 	Instruction ins;
@@ -20,5 +20,6 @@ MsgIF InsFetch::run( )
 	cpu->pc() += 4;
 	*((unsigned int*)(re + 8)) = cpu->read_mem( cpu->pc(), 4 );
 	cpu->pc() += 4;
+	msg.add = cpu->pc();
 	return msg;
 }

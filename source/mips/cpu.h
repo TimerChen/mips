@@ -5,10 +5,11 @@
 #include <iostream>
 
 class InsInput;
-
+class mipsDebug;
 class CPU
 {
 	friend class InsInput;
+	friend class mipsDebug;
 public:
 	CPU(unsigned int MEMSIZE = 32*1024*1024,
 		std::istream *In = &std::cin, std::ostream *Out = &std::cout);
@@ -45,6 +46,7 @@ public:
 	void unlockPc();
 	bool isFree_pc();
 
+	void clearLockReg();
 
 private:
 

@@ -6,6 +6,7 @@ class MsgIF
 {
 public:
 	MsgIF(const char *Str = "");
+	int add;
 	char str[12];
 };
 class MsgID

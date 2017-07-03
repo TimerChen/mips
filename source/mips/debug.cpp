@@ -1,6 +1,7 @@
 #include "debug.h"
 
 #include "instruction.h"
+#include "cpu.h"
 #include <sstream>
 #include <iostream>
 
@@ -24,7 +25,8 @@ std::map<int, int>
 
 bool mipsDebug::debugMode = 0,
 	 mipsDebug::stepInformation = 0, mipsDebug::stepInformation_detail = 0,
-	 mipsDebug::insInputInformation = 0, mipsDebug::returnInformation = 0;
+	 mipsDebug::insInputInformation = 0, mipsDebug::returnInformation = 0,
+	 mipsDebug::lockInformation = 0, mipsDebug::lockInformation_detail = 0;
 
 std::string mipsDebug::tostr( const MsgIF &msg )
 {
@@ -88,6 +90,23 @@ std::string mipsDebug::nowLine( int pc )
 	}
 	std::string str;
 	getline( ss, str );
+	return str;
+}
+
+std::string mipsDebug::regLocks( CPU *cpu )
+{
+	std::string str;
+	for(int ii=0;ii<35;++ii)
+	{
+		if(cpu->locked[ii])
+			str = str + "1";
+		else
+			str = str + "0";
+		if(ii%10==9)
+			str = str + "\n";
+		else
+			str = str + " ";
+	}
 	return str;
 }
 

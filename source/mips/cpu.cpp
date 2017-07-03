@@ -118,16 +118,22 @@ int CPU::newSpace( int len )
 
 void CPU::lockReg( int idx )
 {
-	if( locked[ idx ] )
+	if( locked[ idx ] && idx != 34 )
 		throw( 0 );
 	locked[idx] = 1;
 }
 
 void CPU::unlockReg( int idx )
 {
-	if( !locked[ idx ] )
-		throw( 0 );
+	//if( !locked[ idx ] )
+	//	throw( 0 );
 	locked[idx] = 0;
+}
+
+void CPU::clearLockReg()
+{
+	for(int ii=0;ii<35;++ii)
+		locked[ii] = 0;
 }
 
 void CPU::lockPc()

@@ -24,11 +24,12 @@ int main(int argc, char *argv[])
 {
 	//cout << "Hello World!" << endl;
 	string name = "bulgarian-5110379024-wuhang";
+	//string name = "test";
 	ifstream fin( name + ".in" );
 	ofstream fout( name + ".out" );
 	stringstream sout;
 
-	const bool sOut = 0, fOut = 0, cOut = 1;
+	const bool sOut = 0, fOut = 1, cOut = 0;
 
 	if( argc > 1 )
 		mipsDebug::debugMode = 0;
@@ -38,10 +39,12 @@ int main(int argc, char *argv[])
 	if( mipsDebug::debugMode )
 		cerr << "\t- Debug Mode Now -\n";
 
-	mipsDebug::insInputInformation = 1;
-	mipsDebug::stepInformation = 1;
-	mipsDebug::stepInformation_detail = 1;
-	mipsDebug::returnInformation = 1;
+	mipsDebug::insInputInformation = 0;
+	mipsDebug::stepInformation = 0;
+	mipsDebug::stepInformation_detail = 0;
+	mipsDebug::returnInformation = 0;
+	mipsDebug::lockInformation = 0;
+	mipsDebug::lockInformation_detail = 0;
 
 	try{
 		if(mipsDebug::debugMode)
