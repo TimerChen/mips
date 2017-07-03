@@ -8,6 +8,72 @@ InsDecode::InsDecode( CPU *cpuAdress )
 
 }
 
+bool InsDecode::isFree( const MsgIF &msgIF )
+{
+	Instruction ins;
+	ins = *((Instruction*)(msgIF.str));
+	if( ins.opt == Instruction::Inst::syscall )
+	{
+		//for syscall
+
+		//read $v0
+		if( !cpu->isFree( 2 ) )
+			return 0;
+		switch( cpu->read_reg( 2 ) )
+		{
+			case 8:
+				//read $a1
+				if( !cpu->isFree( 5 ) )
+					return 0;
+			case 1:case 4:case 9:case 17:
+				//read $a0
+				if( !cpu->isFree( 4 ) )
+					return 0;
+			break;
+			case 5:case 10:
+			break;
+		}
+	}else if( ins.opt == Instruction::Inst::mflo ){
+		if( !cpu->isFree( 32 ) )
+			return 0;
+	}else if( ins.opt == Instruction::Inst::mfhi ){
+		if( !cpu->isFree( 33 ) )
+			return 0;
+	}else if( ins.opt == Instruction::Inst::jal ){
+		;
+	}else if( ins.opt == Instruction::Inst::jalr ){
+		;
+	}else if( ins.opt == Instruction::Inst::jr ){
+		if( !cpu->isFree( ins.arg0 ) )
+			return 0;
+	}else{
+		if(ins.arg0 < 32)
+		{
+			if( (Instruction::Inst::beq <= ins.opt &&
+				 ins.opt <= Instruction::Inst::bltz) ||
+				(Instruction::Inst::sb <= ins.opt &&
+				 ins.opt <= Instruction::Inst::sw) ||
+				(Instruction::Inst::mul2 <= ins.opt &&
+				 ins.opt <= Instruction::Inst::divu2) )
+			{
+				if( !cpu->isFree( ins.arg0 ) )
+					return 0;
+			}
+		}
+		if(ins.arg1 < 32)
+		{
+			if( !cpu->isFree( ins.arg1 ) )
+				return 0;
+		}
+		if(ins.arg2 < 32)
+		{
+			if( !cpu->isFree( ins.arg2 ) )
+				return 0;
+		}
+	}
+	return 1;
+}
+
 MsgID InsDecode::run(const MsgIF &msgIF)
 {
 	MsgID msgID;

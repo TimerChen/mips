@@ -9,6 +9,7 @@ class InsDecode : public Stage
 {
 public:
 	InsDecode( CPU *cpuAdress );
+	bool isFree( const MsgIF &msgIF );
 	MsgID run(const MsgIF &msg);
 private:
 };

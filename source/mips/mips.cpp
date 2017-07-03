@@ -151,11 +151,8 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 		}
 
 
-		if( steps == 44 )
-			steps = 44;
 		if( memFull && !wbFull )
 		{
-			try{
 				mwb = writeBack.run( msgmem );
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "done\n" << "Write Back:\n";
@@ -169,11 +166,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 					cerr << mipsDebug::regLocks( &cpu ) << endl;
 
 				running = 1;
-			}catch(...){
 
-				if( mipsDebug::stepInformation_detail )
-					cerr << "WB locked now.\n";
-			}
 		}else{
 			if( mipsDebug::stepInformation_detail )
 				cerr << "WB stop now.\n";
@@ -182,7 +175,6 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 		if( exFull && !memFull )
 
 		{
-			try{
 				mmem = memAceess.run( msgex );
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "done\n" << "Memory Access:\n";
@@ -192,11 +184,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				exFull = 0;
 
 				running = 1;
-			}catch(...){
 
-				if( mipsDebug::stepInformation_detail )
-					cerr << "MEM locked now.\n";
-			}
 
 		}else{
 
@@ -206,7 +194,6 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 
 		if( idFull && !exFull )
 		{
-			try{
 				mex = execute.run( msgid );
 
 				if( mipsDebug::stepInformation_detail )
@@ -219,11 +206,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				idFull = 0;
 
 				running = 1;
-			}catch(...){
 
-				if( mipsDebug::stepInformation_detail )
-					cerr << "EX locked now.\n";
-			}
 
 		}else{
 
@@ -233,7 +216,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 
 		if( ifFull && !idFull )
 		{
-			try{
+			if( insDecode.isFree( msgif ) ){
 				mid = insDecode.run( msgif );
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "done\n" << "Instruction Decode:\n";
@@ -243,7 +226,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				ifFull = 0;
 
 				running = 1;
-			}catch(...){
+			}else{
 
 				if( mipsDebug::stepInformation_detail )
 					cerr << "ID locked now.\n";
@@ -263,7 +246,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 
 		if( cpu.pc() < cpu.pcTop && !ifFull )
 		{
-			try{
+			if( insFetch.isFree() ){
 				mif = insFetch.run();
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "Instruction Fetch:\n";
@@ -272,7 +255,7 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				ifFull = 1;
 
 				running = 1;
-			}catch(...){
+			}else{
 
 				if( mipsDebug::stepInformation_detail )
 					cerr << "IF locked now.\n";

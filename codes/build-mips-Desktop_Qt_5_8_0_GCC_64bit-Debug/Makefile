@@ -672,7 +672,8 @@ insinput.o: ../../source/mips/insinput.cpp ../../source/mips/insinput.h \
 		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insinput.o ../../source/mips/insinput.cpp
 
-cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h
+cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h \
+		../../source/mips/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cpu.o ../../source/mips/cpu.cpp
 
 instruction.o: ../../source/mips/instruction.cpp ../../source/mips/instruction.h
@@ -735,7 +736,8 @@ msg.o: ../../source/mips/msg.cpp ../../source/mips/msg.h
 
 debug.o: ../../source/mips/debug.cpp ../../source/mips/debug.h \
 		../../source/mips/msg.h \
-		../../source/mips/instruction.h
+		../../source/mips/instruction.h \
+		../../source/mips/cpu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug.o ../../source/mips/debug.cpp
 
 error.o: ../../source/mips/error.cpp ../../source/mips/error.h

@@ -42,6 +42,7 @@ public:
 
 	void lockReg( int idx );
 	void unlockReg( int idx );
+	bool isFree( int idx );
 	void lockPc();
 	void unlockPc();
 	bool isFree_pc();
