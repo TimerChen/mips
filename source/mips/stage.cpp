@@ -1,13 +1,10 @@
 #include "stage.h"
 
-Stage::Stage( CPU *cpuAdress )
-	:cpu(cpuAdress)
+Stage::Stage( CPU *cpuAdress, Forwarder *forwarder )
+	:cpu(cpuAdress), fwd(forwarder)
+{}
+
+void Stage::WORK(Stage *s)
 {
-	locked = 0;
+	s->work();
 }
-bool Stage::isFree()
-	{ return !locked; }
-void Stage::lock()
-	{ locked = 1; }
-void Stage::unlock()
-	{ locked = 0; }

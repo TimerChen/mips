@@ -36,7 +36,7 @@ DISTNAME      = mips1.0.0
 DISTDIR = /home/timemachine/Desktop/mips/codes/build-mips-Desktop_Qt_5_8_0_GCC_64bit-Debug/.tmp/mips1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS)  
+LIBS          = $(SUBLIBS) -latomic -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -61,7 +61,9 @@ SOURCES       = ../../source/mips/main.cpp \
 		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
 		../../source/mips/debug.cpp \
-		../../source/mips/error.cpp 
+		../../source/mips/error.cpp \
+		../../source/mips/amutex.cpp \
+		../../source/mips/forwarder.cpp 
 OBJECTS       = main.o \
 		insinput.o \
 		cpu.o \
@@ -75,7 +77,9 @@ OBJECTS       = main.o \
 		stage.o \
 		msg.o \
 		debug.o \
-		error.o
+		error.o \
+		amutex.o \
+		forwarder.o
 DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/linux.conf \
@@ -252,7 +256,9 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		stage.h \
 		msg.h \
 		debug.h \
-		error.h ../../source/mips/main.cpp \
+		error.h \
+		amutex.h \
+		forwarder.h ../../source/mips/main.cpp \
 		../../source/mips/insinput.cpp \
 		../../source/mips/cpu.cpp \
 		../../source/mips/instruction.cpp \
@@ -265,7 +271,9 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
 		../../source/mips/debug.cpp \
-		../../source/mips/error.cpp
+		../../source/mips/error.cpp \
+		../../source/mips/amutex.cpp \
+		../../source/mips/forwarder.cpp
 QMAKE_TARGET  = mips
 DESTDIR       = 
 TARGET        = mips
@@ -653,11 +661,13 @@ compiler_clean:
 
 main.o: ../../source/mips/main.cpp ../../source/mips/mips.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
 		../../source/mips/instruction.h \
 		../../source/mips/insinput.h \
 		../../source/mips/insfetch.h \
 		../../source/mips/msg.h \
 		../../source/mips/stage.h \
+		../../source/mips/forwarder.h \
 		../../source/mips/insdecode.h \
 		../../source/mips/execute.h \
 		../../source/mips/memaccess.h \
@@ -667,12 +677,14 @@ main.o: ../../source/mips/main.cpp ../../source/mips/mips.h \
 
 insinput.o: ../../source/mips/insinput.cpp ../../source/mips/insinput.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
 		../../source/mips/instruction.h \
 		../../source/mips/debug.h \
 		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insinput.o ../../source/mips/insinput.cpp
 
 cpu.o: ../../source/mips/cpu.cpp ../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
 		../../source/mips/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cpu.o ../../source/mips/cpu.cpp
 
@@ -681,45 +693,62 @@ instruction.o: ../../source/mips/instruction.cpp ../../source/mips/instruction.h
 
 insfetch.o: ../../source/mips/insfetch.cpp ../../source/mips/insfetch.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
 		../../source/mips/instruction.h \
 		../../source/mips/msg.h \
 		../../source/mips/stage.h \
-		../../source/mips/error.h
+		../../source/mips/forwarder.h \
+		../../source/mips/error.h \
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insfetch.o ../../source/mips/insfetch.cpp
 
 insdecode.o: ../../source/mips/insdecode.cpp ../../source/mips/insdecode.h \
 		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
+		../../source/mips/forwarder.h \
+		../../source/mips/msg.h \
 		../../source/mips/instruction.h \
-		../../source/mips/msg.h
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o insdecode.o ../../source/mips/insdecode.cpp
 
 memaccess.o: ../../source/mips/memaccess.cpp ../../source/mips/memaccess.h \
 		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
-		../../source/mips/msg.h
+		../../source/mips/amutex.h \
+		../../source/mips/forwarder.h \
+		../../source/mips/msg.h \
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o memaccess.o ../../source/mips/memaccess.cpp
 
 writeback.o: ../../source/mips/writeback.cpp ../../source/mips/writeback.h \
 		../../source/mips/msg.h \
 		../../source/mips/stage.h \
-		../../source/mips/cpu.h
+		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
+		../../source/mips/forwarder.h \
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o writeback.o ../../source/mips/writeback.cpp
 
 execute.o: ../../source/mips/execute.cpp ../../source/mips/execute.h \
 		../../source/mips/stage.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
+		../../source/mips/forwarder.h \
+		../../source/mips/msg.h \
 		../../source/mips/instruction.h \
-		../../source/mips/msg.h
+		../../source/mips/debug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o execute.o ../../source/mips/execute.cpp
 
 mips.o: ../../source/mips/mips.cpp ../../source/mips/mips.h \
 		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
 		../../source/mips/instruction.h \
 		../../source/mips/insinput.h \
 		../../source/mips/insfetch.h \
 		../../source/mips/msg.h \
 		../../source/mips/stage.h \
+		../../source/mips/forwarder.h \
 		../../source/mips/insdecode.h \
 		../../source/mips/execute.h \
 		../../source/mips/memaccess.h \
@@ -728,7 +757,10 @@ mips.o: ../../source/mips/mips.cpp ../../source/mips/mips.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mips.o ../../source/mips/mips.cpp
 
 stage.o: ../../source/mips/stage.cpp ../../source/mips/stage.h \
-		../../source/mips/cpu.h
+		../../source/mips/cpu.h \
+		../../source/mips/amutex.h \
+		../../source/mips/forwarder.h \
+		../../source/mips/msg.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stage.o ../../source/mips/stage.cpp
 
 msg.o: ../../source/mips/msg.cpp ../../source/mips/msg.h
@@ -737,11 +769,20 @@ msg.o: ../../source/mips/msg.cpp ../../source/mips/msg.h
 debug.o: ../../source/mips/debug.cpp ../../source/mips/debug.h \
 		../../source/mips/msg.h \
 		../../source/mips/instruction.h \
-		../../source/mips/cpu.h
+		../../source/mips/cpu.h \
+		../../source/mips/amutex.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug.o ../../source/mips/debug.cpp
 
 error.o: ../../source/mips/error.cpp ../../source/mips/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o error.o ../../source/mips/error.cpp
+
+amutex.o: ../../source/mips/amutex.cpp ../../source/mips/amutex.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o amutex.o ../../source/mips/amutex.cpp
+
+forwarder.o: ../../source/mips/forwarder.cpp ../../source/mips/forwarder.h \
+		../../source/mips/msg.h \
+		../../source/mips/amutex.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o forwarder.o ../../source/mips/forwarder.cpp
 
 ####### Install
 

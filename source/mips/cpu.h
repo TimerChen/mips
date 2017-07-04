@@ -4,6 +4,9 @@
 #include <string>
 #include <iostream>
 
+#include <atomic>
+#include <amutex.h>
+
 class InsInput;
 class mipsDebug;
 class CPU
@@ -40,22 +43,17 @@ public:
 	void write_ioStr( const std::string &str );
 	int newSpace( int len );
 
-	void lockReg( int idx );
-	void unlockReg( int idx );
-	bool isFree( int idx );
-	void lockPc();
-	void unlockPc();
-	bool isFree_pc();
 
 	void clearLockReg();
+
+	AMutex lock[34], lock_pc;
 
 private:
 
 	char *Memory;
 	//lo = reg[32] hi = reg[33] pc = reg[34]
-	unsigned int reg[35],top;
-	bool locked[35];
-	short locked_pc;
+	unsigned int reg[35];
+	unsigned int top;
 	std::istream *in;
 	std::ostream *out;
 

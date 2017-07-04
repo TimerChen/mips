@@ -2,6 +2,8 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
+LIBS += -latomic
+LIBS += -lpthread
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -18,7 +20,9 @@ SOURCES += main.cpp \
     stage.cpp \
     msg.cpp \
     debug.cpp \
-    error.cpp
+    error.cpp \
+    amutex.cpp \
+    forwarder.cpp
 
 HEADERS += \
     mips.h \
@@ -33,4 +37,6 @@ HEADERS += \
     stage.h \
     msg.h \
     debug.h \
-    error.h
+    error.h \
+    amutex.h \
+    forwarder.h

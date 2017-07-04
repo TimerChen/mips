@@ -10,11 +10,12 @@
 class InsFetch : public Stage
 {
 public:
-	InsFetch( CPU *cpuAdress );
-	MsgIF run();
+	InsFetch( CPU *cpuAdress, Forwarder *forwarder );
+	void work();
+
 	bool isFree();
 private:
-
+	MsgIF run();
 };
 
 #endif // INSFETCH_H

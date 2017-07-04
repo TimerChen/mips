@@ -8,9 +8,10 @@
 class WriteBack : public Stage
 {
 public:
-	WriteBack( CPU *cpuAdress );
-	MsgWB run( const MsgMEM &msgMEM );
+	WriteBack( CPU *cpuAdress, Forwarder *forwarder );
+	void work();
 private:
+	MsgWB run( const MsgMEM &msgMEM );
 };
 
 #endif // WRITEBACK_H

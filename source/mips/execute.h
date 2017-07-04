@@ -8,11 +8,11 @@
 class Execute : public Stage
 {
 public:
-	Execute( CPU *cpuAdress );
+	Execute( CPU *cpuAdress, Forwarder *forwarder );
 
-	MsgEX run( const MsgID &msgID );
+	void work();
 private:
-
+	MsgEX run( const MsgID &msgID );
 };
 
 #endif // EXECUTE_H

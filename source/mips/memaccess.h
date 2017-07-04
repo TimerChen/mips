@@ -7,7 +7,9 @@
 class MemAccess : public Stage
 {
 public:
-	MemAccess( CPU* cpuAdress );
+	MemAccess( CPU* cpuAdress, Forwarder *forwarder );
+	void work();
+private:
 	MsgMEM run( const MsgEX &msgEX );
 };
 

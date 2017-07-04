@@ -11,7 +11,7 @@ CPU::CPU(unsigned int MEMSIZE,
 {
 	Memory = new char[MemSize];
 	top=0;
-	for(int i=0;i<35;++i) locked[i] = 0, reg[i] = 0;
+	for(int i=0;i<35;++i) reg[i] = 0;
 	reg[29] = MemSize-1;
 }
 
@@ -33,12 +33,23 @@ unsigned int &CPU::ptop()
 { return top; }
 
 void CPU::write_reg( int idx, int val )
-{ reg[idx] = val; }
+{
+	//no lock
+	reg[idx] = val;
+	if( idx!=34 )
+		lock[idx].unlock();
+	else
+		lock_pc.unlock();
+}
 unsigned int  CPU::read_reg( int idx )
 {
-	if( locked[idx] )
-		throw( RegLocked() );
-	return reg[idx];
+//	if( locked[idx] )
+//		throw( RegLocked() );
+	unsigned int val;
+	lock[idx].lock();
+	val = reg[idx] = val;
+	lock[idx].unlock();
+	return val;
 }
 
 
@@ -57,11 +68,6 @@ unsigned int CPU::read_mem(int idx, short len)
 		tmp[i] = Memory[idx+i];
 	val = *((int*)(tmp));
 	return val;
-}
-
-bool CPU::isFree( int idx )
-{
-	return !locked[ idx ];
 }
 
 
@@ -119,39 +125,4 @@ int CPU::newSpace( int len )
 	while( len-- )
 		Memory[top++] = 0;
 	return top;
-}
-
-
-void CPU::lockReg( int idx )
-{
-	if( locked[ idx ] && idx != 34 )
-		throw( 0 );
-	locked[idx] = 1;
-}
-
-void CPU::unlockReg( int idx )
-{
-	//if( !locked[ idx ] )
-	//	throw( 0 );
-	locked[idx] = 0;
-}
-
-void CPU::clearLockReg()
-{
-	for(int ii=0;ii<35;++ii)
-		locked[ii] = 0;
-}
-
-void CPU::lockPc()
-{
-	locked_pc++;
-}
-
-void CPU::unlockPc()
-{
-	locked_pc--;
-}
-bool CPU::isFree_pc()
-{
-	return !locked_pc;
 }

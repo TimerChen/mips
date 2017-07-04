@@ -1,78 +1,53 @@
 #include "insdecode.h"
 
 #include "instruction.h"
+#include "debug.h"
 
-InsDecode::InsDecode( CPU *cpuAdress )
-	:Stage( cpuAdress )
+#include <thread>
+
+InsDecode::InsDecode( CPU *cpuAdress, Forwarder *forwarder )
+	:Stage( cpuAdress, forwarder )
 {
 
 }
-
-bool InsDecode::isFree( const MsgIF &msgIF )
+void InsDecode::work()
 {
-	Instruction ins;
-	ins = *((Instruction*)(msgIF.str));
-	if( ins.opt == Instruction::Inst::syscall )
+	MsgIF mif;
+	MsgID mid;
+	while( !fwd->exit )
 	{
-		//for syscall
 
-		//read $v0
-		if( !cpu->isFree( 2 ) )
-			return 0;
-		switch( cpu->read_reg( 2 ) )
+
+		//Data-hazard lock(lock-free)
+		//
+		while( !fwd->ok_if )
+			std::this_thread::yield();
+		mif = fwd->mif;
+		fwd->ok_if = 0;
+
+		//run
+		mid = run( mif );
+
+		//debug
+		if( mipsDebug::stepInformation_detail )
+			//cerr << "done\n" << "Instruction Decode:\n";
+			std::cerr << mipsDebug::tostr(mid) << std::endl;
+
+		//Control-hazard lock
+		cpu->lock_pc.lock();
+		if( fwd->clear_id )
 		{
-			case 8:
-				//read $a1
-				if( !cpu->isFree( 5 ) )
-					return 0;
-			case 1:case 4:case 9:case 17:
-				//read $a0
-				if( !cpu->isFree( 4 ) )
-					return 0;
-			break;
-			case 5:case 10:
-			break;
+			fwd->clear_id = 0;
+		}else{
+			while( fwd->ok_id )
+				std::this_thread::yield();
+			fwd->mid = mid;
+			fwd->ok_id = 1;
 		}
-	}else if( ins.opt == Instruction::Inst::mflo ){
-		if( !cpu->isFree( 32 ) )
-			return 0;
-	}else if( ins.opt == Instruction::Inst::mfhi ){
-		if( !cpu->isFree( 33 ) )
-			return 0;
-	}else if( ins.opt == Instruction::Inst::jal ){
-		;
-	}else if( ins.opt == Instruction::Inst::jalr ){
-		;
-	}else if( ins.opt == Instruction::Inst::jr ){
-		if( !cpu->isFree( ins.arg0 ) )
-			return 0;
-	}else{
-		if(ins.arg0 < 32)
-		{
-			if( (Instruction::Inst::beq <= ins.opt &&
-				 ins.opt <= Instruction::Inst::bltz) ||
-				(Instruction::Inst::sb <= ins.opt &&
-				 ins.opt <= Instruction::Inst::sw) ||
-				(Instruction::Inst::mul2 <= ins.opt &&
-				 ins.opt <= Instruction::Inst::divu2) )
-			{
-				if( !cpu->isFree( ins.arg0 ) )
-					return 0;
-			}
-		}
-		if(ins.arg1 < 32)
-		{
-			if( !cpu->isFree( ins.arg1 ) )
-				return 0;
-		}
-		if(ins.arg2 < 32)
-		{
-			if( !cpu->isFree( ins.arg2 ) )
-				return 0;
-		}
+		cpu->lock_pc.unlock();
 	}
-	return 1;
 }
+
 
 MsgID InsDecode::run(const MsgIF &msgIF)
 {
@@ -155,7 +130,8 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 		{
 			case 5:case 9:
 				//lock $v0
-				cpu->lockReg( 2 );
+				cpu->lock[2].lock();
+				//cpu->lockReg( 2 );
 			break;
 		}
 	}else{
@@ -165,18 +141,28 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 			ins.opt <= Instruction::Inst::lw) ||
 			(Instruction::Inst::move <= ins.opt &&
 			ins.opt <= Instruction::Inst::mflo) )
-			cpu->lockReg( ins.arg0 );
-
+		{
+			if(ins.arg0 != 34)
+				cpu->lock[ ins.arg0 ].lock();
+			//cpu->lockReg( ins.arg0 );
+		}
+		/*
 		if(Instruction::Inst::b <= ins.opt &&
 		   ins.opt <= Instruction::Inst::jalr)
-			cpu->lockReg( 34 );
+			cpu->lockReg( 34 );*/
 		if(Instruction::Inst::jal <= ins.opt &&
 			ins.opt <= Instruction::Inst::jalr)
-			cpu->lockReg( 31 );
+			cpu->lock[31].lock();
+			//cpu->lockReg( 31 );
 
 		if( Instruction::Inst::mul2 <= ins.opt &&
 			ins.opt <= Instruction::Inst::divu2 )
-			cpu->lockReg( 32 ), cpu->lockReg( 33 );
+		{
+			cpu->lock[32].lock();
+			cpu->lock[33].lock();
+			//cpu->lockReg( 32 ), cpu->lockReg( 33 );
+		}
+
 	}
 
 

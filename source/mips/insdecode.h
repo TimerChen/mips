@@ -8,8 +8,9 @@
 class InsDecode : public Stage
 {
 public:
-	InsDecode( CPU *cpuAdress );
+	InsDecode( CPU *cpuAdress, Forwarder *forwarder );
 	bool isFree( const MsgIF &msgIF );
+	void work();
 	MsgID run(const MsgIF &msg);
 private:
 };

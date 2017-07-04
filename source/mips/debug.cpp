@@ -96,6 +96,7 @@ std::string mipsDebug::nowLine( int pc )
 std::string mipsDebug::regLocks( CPU *cpu )
 {
 	std::string str;
+	/*
 	for(int ii=0;ii<35;++ii)
 	{
 		if(cpu->locked[ii])
@@ -107,6 +108,7 @@ std::string mipsDebug::regLocks( CPU *cpu )
 		else
 			str = str + " ";
 	}
+	*/
 	return str;
 }
 

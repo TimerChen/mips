@@ -1,11 +1,42 @@
 #include "memaccess.h"
 
-MemAccess::MemAccess( CPU* cpuAdress )
-	:Stage( cpuAdress )
+#include "debug.h"
+
+#include <thread>
+
+MemAccess::MemAccess( CPU* cpuAdress, Forwarder *forwarder )
+	:Stage( cpuAdress, forwarder )
 {
 
 }
+void MemAccess::work()
+{
+	MsgEX mex;
+	MsgMEM mmem;
+	while( !fwd->exit )
+	{
+		//Data-hazard lock(lock-free)
+		//
+		while( !fwd->ok_ex )
+			std::this_thread::yield();
+		mex = fwd->mex;
+		fwd->ok_ex = 0;
 
+		//run
+		mmem = run( mex );
+
+		//debug
+		if( mipsDebug::stepInformation_detail )
+			//cerr << "done\n" << "Memory Access:\n";
+			std::cerr << mipsDebug::tostr(mmem) << std::endl;
+
+		//Control-hazard lock
+		while( fwd->ok_mem )
+			std::this_thread::yield();
+		fwd->mmem = mmem;
+		fwd->ok_mem = 1;
+	}
+}
 
 MsgMEM MemAccess::run( const MsgEX &msgEX )
 {

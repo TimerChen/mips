@@ -1,10 +1,49 @@
 #include "execute.h"
 
-Execute::Execute( CPU* cpuAdress )
-	:Stage( cpuAdress )
+#include "debug.h"
+
+#include <thread>
+
+Execute::Execute( CPU* cpuAdress, Forwarder *forwarder )
+	:Stage( cpuAdress, forwarder )
 {
 
 }
+void Execute::work()
+{
+	MsgID mid;
+	MsgEX mex;
+	while( !fwd->exit )
+	{
+		//Data-hazard lock(lock-free)
+		//
+		while( !fwd->ok_id )
+			std::this_thread::yield();
+		mid = fwd->mid;
+		fwd->ok_id = 0;
+
+		//run
+		mex = run( mid );
+
+		//debug
+		if( mipsDebug::stepInformation_detail )
+			//cerr << "done\n" << "Execute:\n";
+			std::cerr << mipsDebug::tostr(mex) << std::endl;
+
+		//Control-hazard lock
+		cpu->lock_pc.lock();
+			//clear line
+		fwd->clear_if = fwd->clear_id = 1;
+		fwd->ok_if = fwd->ok_id = 0;
+
+		//Data-hazard
+		while( fwd->ok_ex )
+			std::this_thread::yield();
+		fwd->mex = mex;
+		fwd->ok_ex = 1;
+	}
+}
+
 MsgEX Execute::run( const MsgID &msgID )
 {
 	MsgEX msgEX;
