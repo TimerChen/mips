@@ -14,14 +14,25 @@ void InsDecode::work()
 {
 	MsgIF mif;
 	MsgID mid;
-	while( !fwd->exit )
+	while( 1 )
 	{
 
 
 		//Data-hazard lock(lock-free)
 		//
-		while( !fwd->ok_if )
+		while( !fwd->ok_if && !fwd->exit && !fwd->clear_if )
+		{
 			std::this_thread::yield();
+			if( fwd->clear_id )
+			{
+				cpu->clearLockReg();
+				fwd->ok_id = 0;
+				fwd->clear_id = 0;
+			}
+
+		}
+		if( fwd->exit )
+			break;
 		mif = fwd->mif;
 		fwd->ok_if = 0;
 
@@ -30,21 +41,40 @@ void InsDecode::work()
 
 		//debug
 		if( mipsDebug::stepInformation_detail )
-			//cerr << "done\n" << "Instruction Decode:\n";
-			std::cerr << mipsDebug::tostr(mid) << std::endl;
+		{
+			mipsDebug::lock.lock();
+			std::cerr << "[ID]"
+			<< mipsDebug::tostr(mid) << std::endl;
+			mipsDebug::lock.unlock();
+		}
 
 		//Control-hazard lock
-		cpu->lock_pc.lock();
-		if( fwd->clear_id )
+		while( fwd->ok_id )
 		{
-			fwd->clear_id = 0;
-		}else{
-			while( fwd->ok_id )
-				std::this_thread::yield();
-			fwd->mid = mid;
-			fwd->ok_id = 1;
+			std::this_thread::yield();
+			if( fwd->clear_id )
+			{
+				fwd->ok_id = 0;
+			}
 		}
-		cpu->lock_pc.unlock();
+		fwd->mid = mid;
+		fwd->ok_id = 1;
+
+
+
+		//cpu->lock_pc1.lock();
+		while( cpu->lock_pc1.try_lock() )
+		{
+			std::this_thread::yield();
+			if( fwd->clear_id )
+			{
+				cpu->clearLockReg();
+				fwd->ok_id = 0;
+				fwd->clear_id = 0;
+			}
+		}
+		cpu->lock_pc1.unlock();
+		//cpu->lock_pc1.unlock();
 	}
 }
 
@@ -135,34 +165,38 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 			break;
 		}
 	}else{
-		if( (Instruction::Inst::add <= ins.opt &&
-			 ins.opt <= Instruction::Inst::sne) ||
-			(Instruction::Inst::la <= ins.opt &&
-			ins.opt <= Instruction::Inst::lw) ||
-			(Instruction::Inst::move <= ins.opt &&
-			ins.opt <= Instruction::Inst::mflo) )
+		//cpu->lock_pc1.lock();
+		if( !fwd->clear_id )
 		{
-			if(ins.arg0 != 34)
-				cpu->lock[ ins.arg0 ].lock();
-			//cpu->lockReg( ins.arg0 );
-		}
-		/*
-		if(Instruction::Inst::b <= ins.opt &&
-		   ins.opt <= Instruction::Inst::jalr)
-			cpu->lockReg( 34 );*/
-		if(Instruction::Inst::jal <= ins.opt &&
-			ins.opt <= Instruction::Inst::jalr)
-			cpu->lock[31].lock();
-			//cpu->lockReg( 31 );
+			if( (Instruction::Inst::add <= ins.opt &&
+				 ins.opt <= Instruction::Inst::sne) ||
+				(Instruction::Inst::la <= ins.opt &&
+				ins.opt <= Instruction::Inst::lw) ||
+				(Instruction::Inst::move <= ins.opt &&
+				ins.opt <= Instruction::Inst::mflo) )
+			{
+				if(ins.arg0 != 34)
+					cpu->lock[ ins.arg0 ].lock();
+				//cpu->lockReg( ins.arg0 );
+			}
+			/*
+			if(Instruction::Inst::b <= ins.opt &&
+			   ins.opt <= Instruction::Inst::jalr)
+				cpu->lockReg( 34 );*/
+			if(Instruction::Inst::jal <= ins.opt &&
+				ins.opt <= Instruction::Inst::jalr)
+				cpu->lock[31].lock();
+				//cpu->lockReg( 31 );
 
-		if( Instruction::Inst::mul2 <= ins.opt &&
-			ins.opt <= Instruction::Inst::divu2 )
-		{
-			cpu->lock[32].lock();
-			cpu->lock[33].lock();
-			//cpu->lockReg( 32 ), cpu->lockReg( 33 );
+			if( Instruction::Inst::mul2 <= ins.opt &&
+				ins.opt <= Instruction::Inst::divu2 )
+			{
+				cpu->lock[32].lock();
+				cpu->lock[33].lock();
+				//cpu->lockReg( 32 ), cpu->lockReg( 33 );
+			}
 		}
-
+		//cpu->lock_pc1.unlock();
 	}
 
 

@@ -28,6 +28,8 @@ bool mipsDebug::debugMode = 0,
 	 mipsDebug::insInputInformation = 0, mipsDebug::returnInformation = 0,
 	 mipsDebug::lockInformation = 0, mipsDebug::lockInformation_detail = 0;
 
+AMutex mipsDebug::lock;
+
 std::string mipsDebug::tostr( const MsgIF &msg )
 {
 	std::stringstream ss;

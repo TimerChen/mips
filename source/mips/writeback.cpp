@@ -27,8 +27,12 @@ void WriteBack::work()
 
 		//debug
 		if( mipsDebug::stepInformation_detail )
-			//cerr << "done\n" << "Write Back:\n";
-			std::cerr << mipsDebug::tostr(mwb) << std::endl;
+		{
+			mipsDebug::lock.lock();
+			std::cerr <<  "[WB]"
+			<< mipsDebug::tostr(mwb) << std::endl;
+			mipsDebug::lock.unlock();
+		}
 
 		//ready to exit...
 		if( mwb.opt != MsgWB::msgType::non )

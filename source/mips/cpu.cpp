@@ -39,7 +39,10 @@ void CPU::write_reg( int idx, int val )
 	if( idx!=34 )
 		lock[idx].unlock();
 	else
-		lock_pc.unlock();
+	{
+		lock_pc0.unlock();
+		lock_pc1.unlock();
+	}
 }
 unsigned int  CPU::read_reg( int idx )
 {
@@ -47,7 +50,7 @@ unsigned int  CPU::read_reg( int idx )
 //		throw( RegLocked() );
 	unsigned int val;
 	lock[idx].lock();
-	val = reg[idx] = val;
+	val = reg[idx];
 	lock[idx].unlock();
 	return val;
 }
@@ -125,4 +128,9 @@ int CPU::newSpace( int len )
 	while( len-- )
 		Memory[top++] = 0;
 	return top;
+}
+void CPU::clearLockReg()
+{
+	for( int i=0; i<34; ++i )
+		lock[i].unlock();
 }

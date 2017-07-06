@@ -211,7 +211,8 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 	std::thread( Stage::WORK, &memAceess ),
 	std::thread( Stage::WORK, &writeBack ) };
 
-	for( int i=0; i<4; ++i )
+	for( int i=0; i<5; ++i )
+	if( th[i].joinable() )
 		th[i].join();
 	if( mipsDebug::returnInformation && mipsDebug::debugMode )
 	{

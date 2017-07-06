@@ -28,11 +28,18 @@ A MIPS Simulator.
 >
 > * [256code](http://www.cnblogs.com/haippy/p/3235560.html)
 >
+> http://blog.csdn.net/pongba/article/details/588638
+>
+> http://www.cnblogs.com/dengzz/p/5686866.html
+>
+> http://locklessinc.com/articles/locks/
+>
 > C++11 lambda function
 >
 > * http://www.cnblogs.com/pzhfei/archive/2013/01/14/lambda_expression.html
 >
 > ...
+>
 
 ## Features ##
 

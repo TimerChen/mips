@@ -13,12 +13,14 @@ void MemAccess::work()
 {
 	MsgEX mex;
 	MsgMEM mmem;
-	while( !fwd->exit )
+	while( 1 )
 	{
 		//Data-hazard lock(lock-free)
 		//
-		while( !fwd->ok_ex )
+		while( !fwd->ok_ex && !fwd->exit )
 			std::this_thread::yield();
+		if( fwd->exit )
+			break;
 		mex = fwd->mex;
 		fwd->ok_ex = 0;
 
@@ -27,8 +29,12 @@ void MemAccess::work()
 
 		//debug
 		if( mipsDebug::stepInformation_detail )
-			//cerr << "done\n" << "Memory Access:\n";
-			std::cerr << mipsDebug::tostr(mmem) << std::endl;
+		{
+			mipsDebug::lock.lock();
+			std::cerr << "[MA]"
+			<< mipsDebug::tostr(mmem) << std::endl;
+			mipsDebug::lock.unlock();
+		}
 
 		//Control-hazard lock
 		while( fwd->ok_mem )

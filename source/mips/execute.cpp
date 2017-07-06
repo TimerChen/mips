@@ -13,12 +13,14 @@ void Execute::work()
 {
 	MsgID mid;
 	MsgEX mex;
-	while( !fwd->exit )
+	while( 1 )
 	{
 		//Data-hazard lock(lock-free)
 		//
-		while( !fwd->ok_id )
+		while( !fwd->ok_id && !fwd->exit && !fwd->clear_id )
 			std::this_thread::yield();
+		if( fwd->exit )
+			break;
 		mid = fwd->mid;
 		fwd->ok_id = 0;
 
@@ -27,14 +29,27 @@ void Execute::work()
 
 		//debug
 		if( mipsDebug::stepInformation_detail )
-			//cerr << "done\n" << "Execute:\n";
-			std::cerr << mipsDebug::tostr(mex) << std::endl;
+		{
+			mipsDebug::lock.lock();
+			std::cerr << "[EX]"
+			<< mipsDebug::tostr(mex) << std::endl;
+			mipsDebug::lock.unlock();
+		}
 
 		//Control-hazard lock
-		cpu->lock_pc.lock();
-			//clear line
-		fwd->clear_if = fwd->clear_id = 1;
-		fwd->ok_if = fwd->ok_id = 0;
+		if( (mex.opt == MsgEX::msgType::r1 && mex.arg[0] == 34) ||
+			 mex.opt == MsgEX::msgType::r2j )
+		{
+			cpu->lock_pc0.try_lock();
+			cpu->lock_pc1.try_lock();
+				//clear line
+			fwd->clear_if = fwd->clear_id = 1;
+			fwd->ok_if = fwd->ok_id = 0;
+			cpu->clearLockReg();
+
+			while( fwd->clear_if || fwd->clear_id )
+				std::this_thread::yield();
+		}
 
 		//Data-hazard
 		while( fwd->ok_ex )

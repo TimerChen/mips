@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	ofstream fout( name + ".out" );
 	stringstream sout;
 
-	const bool sOut = 0, fOut = 1, cOut = 0;
+	const bool sOut = 1, fOut = 0, cOut = 0;
 
 	if( argc > 1 )
 		mipsDebug::debugMode = 0;
@@ -38,11 +38,17 @@ int main(int argc, char *argv[])
 
 	if( mipsDebug::debugMode )
 		cerr << "\t- Debug Mode Now -\n";
-
+	/*
+	mipsDebug::insInputInformation = 1;
+	mipsDebug::stepInformation = 1;
+	mipsDebug::stepInformation_detail = 1;
+	mipsDebug::returnInformation = 1;
+	/*
 	mipsDebug::insInputInformation = 0;
 	mipsDebug::stepInformation = 0;
 	mipsDebug::stepInformation_detail = 0;
 	mipsDebug::returnInformation = 0;
+	*/
 	mipsDebug::lockInformation = 0;
 	mipsDebug::lockInformation_detail = 0;
 

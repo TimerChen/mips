@@ -7,9 +7,13 @@
 class AMutex
 {
 public:
+
 	AMutex();
+
+	bool try_lock();
 	void lock();
 	void unlock();
+
 private:
 	std::atomic_flag af;
 };

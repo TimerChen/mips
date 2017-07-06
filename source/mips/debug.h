@@ -3,6 +3,8 @@
 
 #include "msg.h"
 
+#include "amutex.h"
+
 #include <map>
 
 class CPU;
@@ -23,6 +25,8 @@ public:
 		lineContent;
 	static std::map<int, int>
 		lineNumber;
+
+	static AMutex lock;
 
 	static bool debugMode,
 				stepInformation, stepInformation_detail,

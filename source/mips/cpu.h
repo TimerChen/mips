@@ -46,7 +46,7 @@ public:
 
 	void clearLockReg();
 
-	AMutex lock[34], lock_pc;
+	AMutex lock[34], lock_pc0, lock_pc1;
 
 private:
 
