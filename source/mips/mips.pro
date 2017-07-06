@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     stage.cpp \
     msg.cpp \
     debug.cpp \
-    error.cpp
+    error.cpp \
+    predictor.cpp
 
 HEADERS += \
     mips.h \
@@ -33,4 +34,5 @@ HEADERS += \
     stage.h \
     msg.h \
     debug.h \
-    error.h
+    error.h \
+    predictor.h
