@@ -9,12 +9,14 @@
 
 class InsInput;
 class mipsDebug;
+class Forwarder;
+
 class CPU
 {
 	friend class InsInput;
 	friend class mipsDebug;
 public:
-	CPU(unsigned int MEMSIZE = 32*1024*1024,
+	CPU( Forwarder* forwarder, unsigned int MEMSIZE = 32*1024*1024,
 		std::istream *In = &std::cin, std::ostream *Out = &std::cout);
 	~CPU();
 
@@ -30,6 +32,7 @@ public:
 	void set_i(std::istream *i);
 	void set_o(std::ostream *o);
 
+	void write_reg_ready( int idx );
 	void write_reg(int idx, int val);
 	unsigned int read_reg(int idx);
 	void write_mem(int idx, int val,short len);
@@ -50,9 +53,11 @@ public:
 
 private:
 
+	Forwarder *fwd;
 	char *Memory;
 	//lo = reg[32] hi = reg[33] pc = reg[34]
 	unsigned int reg[35];
+	short modify_num[35];
 	unsigned int top;
 	std::istream *in;
 	std::ostream *out;

@@ -5,7 +5,7 @@
 #include <thread>
 
 Mips::Mips(unsigned int MEMSIZE)
-	:cpu(MEMSIZE),insInput(&cpu),
+	:cpu( &fwd, MEMSIZE),insInput(&cpu),
 	  insFetch(&cpu, &fwd), insDecode(&cpu, &fwd), execute(&cpu, &fwd),
 	  memAceess(&cpu, &fwd), writeBack(&cpu, &fwd)
 {

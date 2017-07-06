@@ -14,67 +14,72 @@ void InsDecode::work()
 {
 	MsgIF mif;
 	MsgID mid;
+	bool &ready = fwd->ready_id;
+	ready = 0;
 	while( 1 )
 	{
-
-
-		//Data-hazard lock(lock-free)
-		//
-		while( !fwd->ok_if && !fwd->exit && !fwd->clear_if )
-		{
-			std::this_thread::yield();
-			if( fwd->clear_id )
-			{
-				cpu->clearLockReg();
-				fwd->ok_id = 0;
-				fwd->clear_id = 0;
-			}
-
-		}
 		if( fwd->exit )
 			break;
-		mif = fwd->mif;
-		fwd->ok_if = 0;
 
-		//run
-		mid = run( mif );
-
-		//debug
-		if( mipsDebug::stepInformation_detail )
+		if( !ready )
 		{
-			mipsDebug::lock.lock();
-			std::cerr << "[ID]"
-			<< mipsDebug::tostr(mid) << std::endl;
-			mipsDebug::lock.unlock();
-		}
-
-		//Control-hazard lock
-		while( fwd->ok_id )
-		{
-			std::this_thread::yield();
-			if( fwd->clear_id )
+			if( !fwd->ok_if )
 			{
-				fwd->ok_id = 0;
+				std::this_thread::yield();
+			}else{
+				mif = fwd->mif;
+				fwd->ok_if = 0;
+
+				//run
+				mid = run( mif );
+				ready = 1;
+
+				//debug
+				if( mipsDebug::stepInformation_detail )
+				{
+					mipsDebug::lock.lock();
+					std::cerr << "[ID]"
+					<< mipsDebug::tostr(mid) << std::endl;
+					mipsDebug::lock.unlock();
+				}
 			}
 		}
-		fwd->mid = mid;
-		fwd->ok_id = 1;
-
-
-
-		//cpu->lock_pc1.lock();
-		while( cpu->lock_pc1.try_lock() )
+		if( ready || fwd->clear_idline )
 		{
-			std::this_thread::yield();
-			if( fwd->clear_id )
+			while( !fwd->exit )
 			{
-				cpu->clearLockReg();
-				fwd->ok_id = 0;
-				fwd->clear_id = 0;
+				if( cpu->lock_pc1.try_lock() )
+				{
+					std::this_thread::yield();
+				}else{
+					if( !fwd->clear_idline && !fwd->clear_id ){
+						if( !fwd->ok_id && ready )
+						{
+							fwd->mid = mid;
+							fwd->ok_id = 1;
+							ready = 0;
+							cpu->lock_pc1.unlock();
+							break;
+						}else
+						{
+							cpu->lock_pc1.unlock();
+							break;
+						}
+					}else if( fwd->clear_idline ){
+						cpu->clearLockReg();
+						fwd->clear_idline = 0;
+						ready = 0;
+						if( !fwd->clear_id )
+						{
+							cpu->lock_pc1.unlock();
+							break;
+						}
+					}
+					cpu->lock_pc1.unlock();
+				}
+				std::this_thread::yield();
 			}
 		}
-		cpu->lock_pc1.unlock();
-		//cpu->lock_pc1.unlock();
 	}
 }
 
@@ -160,7 +165,8 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 		{
 			case 5:case 9:
 				//lock $v0
-				cpu->lock[2].lock();
+				cpu->write_reg_ready( 2 );
+				//cpu->lock[2].lock();
 				//cpu->lockReg( 2 );
 			break;
 		}
@@ -176,7 +182,8 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 				ins.opt <= Instruction::Inst::mflo) )
 			{
 				if(ins.arg0 != 34)
-					cpu->lock[ ins.arg0 ].lock();
+					cpu->write_reg_ready( ins.arg0 );
+					//cpu->lock[ ins.arg0 ].lock();
 				//cpu->lockReg( ins.arg0 );
 			}
 			/*
@@ -185,14 +192,17 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 				cpu->lockReg( 34 );*/
 			if(Instruction::Inst::jal <= ins.opt &&
 				ins.opt <= Instruction::Inst::jalr)
-				cpu->lock[31].lock();
+				cpu->write_reg_ready( 31 );
+				//cpu->lock[31].lock();
 				//cpu->lockReg( 31 );
 
 			if( Instruction::Inst::mul2 <= ins.opt &&
 				ins.opt <= Instruction::Inst::divu2 )
 			{
-				cpu->lock[32].lock();
-				cpu->lock[33].lock();
+				cpu->write_reg_ready(32);
+				cpu->write_reg_ready(33);
+				//cpu->lock[32].lock();
+				//cpu->lock[33].lock();
 				//cpu->lockReg( 32 ), cpu->lockReg( 33 );
 			}
 		}

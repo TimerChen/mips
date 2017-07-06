@@ -1,14 +1,17 @@
 #include "cpu.h"
 
 #include "error.h"
+#include "forwarder.h"
+#include <thread>
 #include <cstring>
 
 const unsigned CPU::InsStep = 12;
 
-CPU::CPU(unsigned int MEMSIZE,
+CPU::CPU( Forwarder* forwarder, unsigned int MEMSIZE,
 		 std::istream *In, std::ostream *Out)
 	:MemSize(MEMSIZE), in(In), out(Out)
 {
+	fwd = forwarder;
 	Memory = new char[MemSize];
 	top=0;
 	for(int i=0;i<35;++i) reg[i] = 0;
@@ -35,23 +38,63 @@ unsigned int &CPU::ptop()
 void CPU::write_reg( int idx, int val )
 {
 	//no lock
-	reg[idx] = val;
+
+
 	if( idx!=34 )
-		lock[idx].unlock();
+	{
+		while( 1 )
+		{
+			if( lock[idx].try_lock() )
+			{
+				std::this_thread::yield();
+			}else{
+				if( modify_num[idx] )
+					modify_num[idx]--;
+				reg[idx] = val;
+				lock[idx].unlock();
+				break;
+			}
+		}
+	}
 	else
 	{
-		lock_pc0.unlock();
-		lock_pc1.unlock();
+		reg[idx] = val;
 	}
 }
-unsigned int  CPU::read_reg( int idx )
+void CPU::write_reg_ready( int idx )
+{
+	if( idx!=34 )
+	{
+		lock[idx].lock();
+		modify_num[idx]++;
+		lock[idx].unlock();
+	}else{
+
+	}
+}
+
+unsigned int CPU::read_reg( int idx )
 {
 //	if( locked[idx] )
 //		throw( RegLocked() );
 	unsigned int val;
-	lock[idx].lock();
-	val = reg[idx];
-	lock[idx].unlock();
+	while(1)
+	{
+		if( fwd->clear_idline || fwd->exit )
+			break;
+		if( lock[idx].try_lock() )
+		{
+			std::this_thread::yield();
+		}else{
+			if( modify_num[idx]==0 )
+			{
+				val = reg[idx];
+				lock[idx].unlock();
+				break;
+			}else
+				lock[idx].unlock();
+		}
+	}
 	return val;
 }
 
@@ -132,5 +175,9 @@ int CPU::newSpace( int len )
 void CPU::clearLockReg()
 {
 	for( int i=0; i<34; ++i )
+	{
+		lock[i].lock();
+		modify_num[i] = 0;
 		lock[i].unlock();
+	}
 }

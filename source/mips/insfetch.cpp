@@ -14,65 +14,74 @@ InsFetch::InsFetch( CPU *cpuAdress, Forwarder *forwarder )
 void InsFetch::work()
 {
 	MsgIF mif;
+	bool &ready = fwd->ready_if;
+	ready = 0;
 	while( 1 )
 	{
-		while( cpu->pc() >= cpu->pcTop && !fwd->exit )
-		{
-			std::this_thread::yield();
-			if( fwd->clear_if )
-			{
-				fwd->ok_if = 0;
-				fwd->clear_if = 0;
-			}
-		}
-
 		if( fwd->exit )
 			break;
-
-		if( mipsDebug::stepInformation )
+		if( !ready )
 		{
-			mipsDebug::lock.lock();
-			std::cerr << mipsDebug::nowLine( cpu->pc() ) << std::endl;
-			mipsDebug::lock.unlock();
-		}
-
-		mif = run();
-
-		if( mipsDebug::stepInformation_detail )
-		{
-			mipsDebug::lock.lock();
-			std::cerr << "[IF]"
-			<< mipsDebug::tostr(mif) << std::endl;
-			mipsDebug::lock.unlock();
-		}
-
-
-		cpu->pc() += 12;
-		while( fwd->ok_if )
-		{
-			std::this_thread::yield();
-			if( fwd->clear_if )
+			if( cpu->pc() >= cpu->pcTop )
 			{
-				fwd->ok_if = 0;
+				std::this_thread::yield();
+			}else{
+				mif = run();
+				//debug
+				if( mipsDebug::stepInformation_detail )
+				{
+					mipsDebug::lock.lock();
+					std::cerr << "Now Line: " << mipsDebug::nowLine(cpu->pc()) << std::endl
+							  << "[IF]"
+					<< mipsDebug::tostr(mif) << std::endl;
+					mipsDebug::lock.unlock();
+				}
+				ready = 1;
 			}
 		}
-		fwd->mif = mif;
-		fwd->ok_if = 1;
-
-
-
-		//cpu->lock_pc0.lock();
-		while( cpu->lock_pc0.try_lock() )
-		{
-			std::this_thread::yield();
-			if( fwd->clear_if )
+		if( ready ){
+			while( !fwd->exit )
 			{
-				fwd->ok_if = 0;
-				fwd->clear_if = 0;
+				if( cpu->lock_pc0.try_lock() )
+				{
+					std::this_thread::yield();
+				}else{
+					if( !fwd->clear_ifline && !fwd->clear_if ){
+						if( !fwd->ok_if )
+						{
+							while ( fwd->clear_idline && !fwd->exit )
+								std::this_thread::yield();
+
+							if( mipsDebug::stepInformation_detail )
+							{
+								mipsDebug::lock.lock();
+								std::cerr
+										  << "[IF]"
+								<< "msg out" << std::endl;
+								mipsDebug::lock.unlock();
+							}
+							cpu->pc() += 12;
+							fwd->mif = mif;
+							fwd->ok_if = 1;
+							ready = 0;
+
+							cpu->lock_pc0.unlock();
+							break;
+						}
+					}else if( fwd->clear_ifline ){
+						fwd->clear_ifline = 0;
+						ready = 0;
+						if( !fwd->clear_if )
+						{
+							cpu->lock_pc0.unlock();
+							break;
+						}
+					}
+					cpu->lock_pc0.unlock();
+				}
+				std::this_thread::yield();
 			}
 		}
-		cpu->lock_pc0.unlock();
-
 	}
 }
 

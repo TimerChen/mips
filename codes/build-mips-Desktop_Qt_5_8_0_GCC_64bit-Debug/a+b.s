@@ -16,7 +16,8 @@ main:
 	move $t1 $v0
 
 	#use calc
-	jal calc
+	add $t2 $t0 $t1
+	#jal calc
 
 	#output a+b
 	move $a0 $t2 #move

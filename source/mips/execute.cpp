@@ -13,14 +13,12 @@ void Execute::work()
 {
 	MsgID mid;
 	MsgEX mex;
-	while( 1 )
+	while( !fwd->exit )
 	{
 		//Data-hazard lock(lock-free)
 		//
-		while( !fwd->ok_id && !fwd->exit && !fwd->clear_id )
+		while( !fwd->ok_id && !fwd->exit )
 			std::this_thread::yield();
-		if( fwd->exit )
-			break;
 		mid = fwd->mid;
 		fwd->ok_id = 0;
 
@@ -40,19 +38,18 @@ void Execute::work()
 		if( (mex.opt == MsgEX::msgType::r1 && mex.arg[0] == 34) ||
 			 mex.opt == MsgEX::msgType::r2j )
 		{
-			cpu->lock_pc0.try_lock();
-			cpu->lock_pc1.try_lock();
-				//clear line
+			cpu->lock_pc0.lock();
+			cpu->lock_pc1.lock();
+			//clear line
 			fwd->clear_if = fwd->clear_id = 1;
+			//fwd->clear_ifline = fwd->clear_idline = 1;
 			fwd->ok_if = fwd->ok_id = 0;
-			cpu->clearLockReg();
-
-			while( fwd->clear_if || fwd->clear_id )
-				std::this_thread::yield();
+			cpu->lock_pc0.unlock();
+			cpu->lock_pc1.unlock();
 		}
 
 		//Data-hazard
-		while( fwd->ok_ex )
+		while( fwd->ok_ex && !fwd->exit )
 			std::this_thread::yield();
 		fwd->mex = mex;
 		fwd->ok_ex = 1;

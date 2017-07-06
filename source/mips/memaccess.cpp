@@ -13,14 +13,12 @@ void MemAccess::work()
 {
 	MsgEX mex;
 	MsgMEM mmem;
-	while( 1 )
+	while( !fwd->exit )
 	{
 		//Data-hazard lock(lock-free)
 		//
 		while( !fwd->ok_ex && !fwd->exit )
 			std::this_thread::yield();
-		if( fwd->exit )
-			break;
 		mex = fwd->mex;
 		fwd->ok_ex = 0;
 
@@ -37,8 +35,9 @@ void MemAccess::work()
 		}
 
 		//Control-hazard lock
-		while( fwd->ok_mem )
+		while( fwd->ok_mem && !fwd->exit ){
 			std::this_thread::yield();
+		}
 		fwd->mmem = mmem;
 		fwd->ok_mem = 1;
 	}

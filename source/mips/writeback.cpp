@@ -13,11 +13,11 @@ void WriteBack::work()
 {
 	MsgMEM mmem;
 	MsgWB mwb;
-	while( 1 )
+	while( !fwd->exit )
 	{
 		//Data-hazard lock(lock-free)
 		//
-		while( !fwd->ok_mem )
+		while( !fwd->ok_mem && !fwd->exit )
 			std::this_thread::yield();
 		mmem = fwd->mmem;
 		fwd->ok_mem = 0;
@@ -71,6 +71,19 @@ MsgWB WriteBack::run( const MsgMEM &msgMEM )
 		msgWB.opt = MsgWB::msgType::exit0;
 		msgWB.arg = msgMEM.arg[0];
 		break;
+	}
+	if( ( msgMEM.opt == MsgMEM::msgType::r1 && msgMEM.arg[0] == 34 ) ||
+		msgMEM.opt == MsgMEM::msgType::r2j )
+	{
+		//wait for clear line
+		cpu->lock_pc0.lock();
+		cpu->lock_pc1.lock();
+
+		fwd->clear_ifline = fwd->clear_idline = 1;
+		fwd->clear_if = fwd->clear_id = 0;
+
+		cpu->lock_pc0.unlock();
+		cpu->lock_pc1.unlock();
 	}
 	return msgWB;
 }
