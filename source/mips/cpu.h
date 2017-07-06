@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <atomic>
-#include <amutex.h>
+#include "amutex.h"
 
 class InsInput;
 class mipsDebug;

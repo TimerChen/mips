@@ -23,7 +23,7 @@ std::string getString( iostream& io )
 int main(int argc, char *argv[])
 {
 	//cout << "Hello World!" << endl;
-	string name = "lvalue2-5110379024-wuhang";
+	string name = "tak-5090379042-jiaxiao";
 	//string name = "test";
 	ifstream fin( name + ".in" );
 	ofstream fout( name + ".out" );
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
 	if( mipsDebug::debugMode )
 		cerr << "\t- Debug Mode Now -\n";
-
+	/*
 	mipsDebug::insInputInformation = 1;
 	mipsDebug::stepInformation = 1;
 	mipsDebug::stepInformation_detail = 1;
