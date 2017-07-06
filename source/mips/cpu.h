@@ -54,7 +54,7 @@ private:
 	char *Memory;
 	//lo = reg[32] hi = reg[33] pc = reg[34]
 	unsigned int reg[35],top;
-	bool locked[35];
+	short locked[35];
 	short locked_pc;
 	std::istream *in;
 	std::ostream *out;

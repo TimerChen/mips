@@ -126,14 +126,15 @@ void CPU::lockReg( int idx )
 {
 	if( locked[ idx ] && idx != 34 )
 		throw( 0 );
-	locked[idx] = 1;
+	locked[idx]++;
 }
 
 void CPU::unlockReg( int idx )
 {
 	//if( !locked[ idx ] )
 	//	throw( 0 );
-	locked[idx] = 0;
+	if( locked[idx] )
+		locked[idx]--;
 }
 
 void CPU::clearLockReg()
