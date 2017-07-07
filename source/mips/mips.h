@@ -28,6 +28,7 @@ public:
 	void run( const std::string &File, std::istream *I = &std::cin, std::ostream *O = &std::cout );
 private:
 	CPU cpu;
+	Predictor prd;
 	InsInput insInput;
 	InsFetch insFetch;
 	InsDecode insDecode;

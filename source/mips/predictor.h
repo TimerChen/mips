@@ -6,12 +6,23 @@ class Predictor
 {
 public:
 	Predictor();
-	char mode[16][16],his[16];
-	void move( const char &add, const char &next );
-	char hash( const unsigned int &address );
 
-	void step( const unsigned int &address, const char &next );
-	bool predict( const unsigned int &address );
+	//const static int BIT, BACK;
+
+	//char mode[BIT][BACK],his[BIT];
+
+	void fail();
+
+	void step( const int &address, const char &next );
+	bool predict( const int &address );
+
+	double suc();
+private:
+
+	void move( const char &add, const char &next );
+	char hash( const int &address );
+	char mode[16][16],his[16];
+	int tot,failed;
 };
 
 #endif // PREDICTOR_H

@@ -60,6 +60,8 @@ void Mips::clearLine()
 {
 	if( mipsDebug::lockInformation )
 		std::cerr << "< clear line >" << std::endl;
+	prd.fail();
+	//prd.failed++;
 	//clear msg
 	ifFull = idFull = 0;
 	//unlock regs
@@ -112,8 +114,8 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 		//int nowPc = cpu.pc();
 		steps++;
 
-		if( steps == 23 )
-			steps = 23;
+		if( steps == 33 )
+			steps = 33;
 
 		running = 0;
 		if( mipsDebug::stepInformation )
@@ -173,10 +175,33 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 					//cerr << "done\n" << "Execute:\n";
 					cerr << mipsDebug::tostr(mex) << endl;
 
-				if( Instruction::Inst::b <= mid.opt && mid.opt <= Instruction::Inst::bltz )
+				if( Instruction::Inst::beq <= mid.opt && mid.opt <= Instruction::Inst::bltz )
 				{
-					if(lock_pc( mex ))
-						mex.lpc = 1;
+					//prd.move( mid.arg[3], mex.opt == MsgEX::msgType::non? 0 : 1 );
+					prd.step( mid.arg[3], mex.opt == MsgEX::msgType::non? 0 : 1 );
+					if( mex.opt == MsgEX::msgType::non )
+					{
+						if( mid.arg[4] ){
+							clearLine();
+							cpu.pc() = mid.arg[3];
+						}
+					}else{
+						if( !mid.arg[4] ){
+							clearLine();
+							if( mex.opt == MsgEX::msgType::r1 )
+								cpu.pc() = mex.arg[1];
+							else
+								cpu.pc() = mex.arg[0];
+						}
+						if( mex.opt == MsgEX::msgType::r1 )
+						{
+							mex.opt = MsgEX::msgType::non;
+						}else if( mex.opt == MsgEX::msgType::r2j ){
+							mex.opt = MsgEX::msgType::r1;
+							mex.arg[0] = 31;
+						}
+					}
+
 				}
 				msgex = mex;
 				exFull = 1;
@@ -202,9 +227,17 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 					( Instruction::Inst::j <= mid.opt && mid.opt <= Instruction::Inst::jalr ) )
 				{
 					cpu.pc() = mid.arg[0];
-				}else if( Instruction::Inst::b <= mid.opt && mid.opt <= Instruction::Inst::bltz )
+				}else if( Instruction::Inst::beq <= mid.opt && mid.opt <= Instruction::Inst::bltz )
 				{
-					//cpu.pc() = mid.arg[0];
+					if(prd.predict( msgif.add ))
+					{
+						if( Instruction::Inst::beq <= mid.opt && mid.opt <= Instruction::Inst::blt )
+							cpu.pc() = mid.arg[2];
+						else
+							cpu.pc() = mid.arg[1];
+						mid.arg[4] = 1;
+					}else
+						mid.arg[4] = 0;
 				}
 				msgid = mid;
 				idFull = 1;
@@ -267,6 +300,9 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 		if( cpu.pc() >= cpu.pcTop )
 			break;*/
 	}while(1);
+
+	std::cerr << prd.suc() << std::endl;
+
 	if( mipsDebug::returnInformation && mipsDebug::debugMode )
 	{
 		if( mwb.opt == MsgWB::msgType::exit0 )

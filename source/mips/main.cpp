@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
 	if( mipsDebug::debugMode )
 		cerr << "\t- Debug Mode Now -\n";
-
+	/*
 	mipsDebug::insInputInformation = 1;
 	mipsDebug::stepInformation = 1;
 	mipsDebug::stepInformation_detail = 1;
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	mipsDebug::returnInformation = 0;
 	 * */
 	mipsDebug::lockInformation = 0;
-	mipsDebug::lockInformation_detail = 1;
+	mipsDebug::lockInformation_detail = 0;
 
 	try{
 		if(mipsDebug::debugMode)
