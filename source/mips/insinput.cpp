@@ -185,7 +185,7 @@ std::string InsInput::getLine()
 }
 int InsInput::translate( const std::string &a, const short &type )
 {
-	int re;
+	int re = 0;
 	switch (type) {
 		case tokenType::label:
 		case tokenType::pinst:
