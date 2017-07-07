@@ -23,6 +23,7 @@ public:
 	MsgEX();
 	enum msgType{ non,r1,r2lh,r2j,load,store,oInt,oStr,iInt,iStr,space,exit,exit0 };
 	short opt;
+	bool lpc;
 	int arg[3];
 };
 class MsgMEM
@@ -31,6 +32,7 @@ public:
 	MsgMEM();
 	enum msgType{ non,r1,r2lh,r2j,exit,exit0 };
 	short opt;
+	bool lpc;
 	int arg[2];
 };
 class MsgWB

@@ -150,6 +150,7 @@ void CPU::lockPc()
 
 void CPU::unlockPc()
 {
+	if( locked_pc )
 	locked_pc--;
 }
 bool CPU::isFree_pc()

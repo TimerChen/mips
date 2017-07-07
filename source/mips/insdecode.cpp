@@ -144,6 +144,11 @@ MsgID InsDecode::run(const MsgIF &msgIF)
 			msgID.arg[msgID.narg++] = cpu->read_reg(ins.arg2);
 		msgID.arg[msgID.narg++] = ins.arg3;
 		msgID.arg[msgID.narg++] = ins.arg4;
+		if(Instruction::Inst::beq <= ins.opt &&
+				ins.opt <= Instruction::Inst::bltz)
+		{
+			msgID.arg[3] = msgIF.add;
+		}
 	}
 
 	//lock regs

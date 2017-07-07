@@ -207,9 +207,12 @@ MsgEX Execute::run( const MsgID &msgID )
 
 		case Instruction::Inst::b:
 		{
+			/*
 			msgEX.opt = MsgEX::msgType::r1;
 			msgEX.arg[0] = 34;
 			msgEX.arg[1] = msgID.arg[0];
+			*/
+			msgEX.opt = MsgEX::msgType::non;
 		}break;
 
 		case Instruction::Inst::beq:
@@ -357,30 +360,26 @@ MsgEX Execute::run( const MsgID &msgID )
 		}break;
 
 		case Instruction::Inst::j:
-		{
-			msgEX.opt = MsgEX::msgType::r1;
-			msgEX.arg[0] = 34;
-			msgEX.arg[1] = msgID.arg[0];
-		}break;
-
 		case Instruction::Inst::jr:
 		{
+			/*
 			msgEX.opt = MsgEX::msgType::r1;
 			msgEX.arg[0] = 34;
 			msgEX.arg[1] = msgID.arg[0];
+			*/
+			msgEX.opt = MsgEX::msgType::non;
 		}break;
 
 		case Instruction::Inst::jal:
+		case Instruction::Inst::jalr:
 		{
+			/*
 			msgEX.opt = MsgEX::msgType::r2j;
 			msgEX.arg[0] = msgID.arg[0];
 			msgEX.arg[1] = msgID.arg[1];
-		}break;
-
-		case Instruction::Inst::jalr:
-		{
-			msgEX.opt = MsgEX::msgType::r2j;
-			msgEX.arg[0] = msgID.arg[0];
+			*/
+			msgEX.opt = MsgEX::msgType::r1;
+			msgEX.arg[0] = 31;
 			msgEX.arg[1] = msgID.arg[1];
 		}break;
 

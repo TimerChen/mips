@@ -61,7 +61,8 @@ SOURCES       = ../../source/mips/main.cpp \
 		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
 		../../source/mips/debug.cpp \
-		../../source/mips/error.cpp 
+		../../source/mips/error.cpp \
+		../../source/mips/predictor.cpp 
 OBJECTS       = main.o \
 		insinput.o \
 		cpu.o \
@@ -75,7 +76,8 @@ OBJECTS       = main.o \
 		stage.o \
 		msg.o \
 		debug.o \
-		error.o
+		error.o \
+		predictor.o
 DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt5.8.0/5.8/gcc_64/mkspecs/common/linux.conf \
@@ -252,7 +254,8 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		stage.h \
 		msg.h \
 		debug.h \
-		error.h ../../source/mips/main.cpp \
+		error.h \
+		predictor.h ../../source/mips/main.cpp \
 		../../source/mips/insinput.cpp \
 		../../source/mips/cpu.cpp \
 		../../source/mips/instruction.cpp \
@@ -265,7 +268,8 @@ DIST          = ../../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../source/mips/stage.cpp \
 		../../source/mips/msg.cpp \
 		../../source/mips/debug.cpp \
-		../../source/mips/error.cpp
+		../../source/mips/error.cpp \
+		../../source/mips/predictor.cpp
 QMAKE_TARGET  = mips
 DESTDIR       = 
 TARGET        = mips
@@ -742,6 +746,9 @@ debug.o: ../../source/mips/debug.cpp ../../source/mips/debug.h \
 
 error.o: ../../source/mips/error.cpp ../../source/mips/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o error.o ../../source/mips/error.cpp
+
+predictor.o: ../../source/mips/predictor.cpp ../../source/mips/predictor.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o predictor.o ../../source/mips/predictor.cpp
 
 ####### Install
 

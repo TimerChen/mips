@@ -11,6 +11,7 @@ MsgMEM MemAccess::run( const MsgEX &msgEX )
 {
 	MsgMEM msgMEM;
 	msgMEM.opt = MsgMEM::msgType::non;
+	msgMEM.lpc = msgEX.lpc;
 	switch( msgEX.opt )
 	{
 	case MsgEX::msgType::non:

@@ -18,11 +18,13 @@ MsgID::MsgID()
 MsgEX::MsgEX()
 {
 	opt = arg[0] = arg[1] = arg[2] = 0;
+	lpc = 0;
 }
 
 MsgMEM::MsgMEM()
 {
 	opt = arg[0] = arg[1] = 0;
+	lpc = 0;
 }
 
 MsgWB::MsgWB()

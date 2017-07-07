@@ -17,6 +17,7 @@
 #include "memaccess.h"
 #include "writeback.h"
 #include "msg.h"
+#include "predictor.h"
 
 
 class Mips
@@ -49,7 +50,7 @@ private:
 	void store( const MsgWB &msg );
 
 	void clearLine();
-	void lock_pc( const MsgEX &msg );
+	bool lock_pc( const MsgEX &msg );
 	void unlock_pc( const MsgMEM &msg );
 
 };

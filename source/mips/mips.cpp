@@ -66,7 +66,7 @@ void Mips::clearLine()
 	cpu.clearLockReg();
 }
 
-void Mips::lock_pc( const MsgEX &msg )
+bool Mips::lock_pc( const MsgEX &msg )
 {
 	if( (msg.opt == MsgEX::msgType::r1 && msg.arg[0] == 34) ||
 		msg.opt == MsgEX::msgType::r2j )
@@ -74,7 +74,9 @@ void Mips::lock_pc( const MsgEX &msg )
 		if( cpu.isFree_pc() )
 			clearLine();
 		cpu.lockPc();
+		return 1;
 	}
+	return 0;
 }
 void Mips::unlock_pc( const MsgMEM &msg )
 {
@@ -109,41 +111,11 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 		using namespace std;
 		//int nowPc = cpu.pc();
 		steps++;
+
+		if( steps == 23 )
+			steps = 23;
+
 		running = 0;
-/*
-
-		mif = insFetch.run();
-		mid = insDecode.run( mif );
-		mex = execute.run( mid );
-		mmem = memAceess.run( mex );
-		mwb = writeBack.run( mmem );
-
-		if( mipsDebug::stepInformation )
-		{
-			cerr << "\n[ Step: " << steps << " ]" << endl;
-			cerr << mipsDebug::nowLine( nowPc ) << endl;
-		}
-
-			if( mipsDebug::stepInformation_detail )
-				//cerr << "Instruction Fetch:\n";
-				cerr << mipsDebug::tostr(mif) << endl;
-
-			if( mipsDebug::stepInformation_detail )
-				//cerr << "done\n" << "Instruction Decode:\n";
-				cerr << mipsDebug::tostr(mid) << endl;
-
-			if( mipsDebug::stepInformation_detail )
-				//cerr << "done\n" << "Execute:\n";
-				cerr << mipsDebug::tostr(mex) << endl;
-
-			if( mipsDebug::stepInformation_detail )
-				//cerr << "done\n" << "Memory Access:\n";
-				cerr << mipsDebug::tostr(mmem) << endl;
-
-			if( mipsDebug::stepInformation_detail )
-				//cerr << "done\n" << "Write Back:\n";
-				cerr << mipsDebug::tostr(mwb) << endl;
-*/
 		if( mipsDebug::stepInformation )
 		{
 			cerr << "\n[ Step: " << steps << " ]" << endl;
@@ -157,7 +129,8 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "done\n" << "Write Back:\n";
 					cerr << mipsDebug::tostr(mwb) << endl;
-				unlock_pc( msgmem );
+				if( msgmem.lpc )
+					unlock_pc( msgmem );
 				msgwb = mwb;
 				wbFull = 1;
 				memFull = 0;
@@ -200,7 +173,11 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 					//cerr << "done\n" << "Execute:\n";
 					cerr << mipsDebug::tostr(mex) << endl;
 
-				lock_pc( mex );
+				if( Instruction::Inst::b <= mid.opt && mid.opt <= Instruction::Inst::bltz )
+				{
+					if(lock_pc( mex ))
+						mex.lpc = 1;
+				}
 				msgex = mex;
 				exFull = 1;
 				idFull = 0;
@@ -221,6 +198,14 @@ void Mips::run( const std::string &File, std::istream *I, std::ostream *O )
 				if( mipsDebug::stepInformation_detail )
 					//cerr << "done\n" << "Instruction Decode:\n";
 					cerr << mipsDebug::tostr(mid) << endl;
+				if( mid.opt == Instruction::Inst::b ||
+					( Instruction::Inst::j <= mid.opt && mid.opt <= Instruction::Inst::jalr ) )
+				{
+					cpu.pc() = mid.arg[0];
+				}else if( Instruction::Inst::b <= mid.opt && mid.opt <= Instruction::Inst::bltz )
+				{
+					//cpu.pc() = mid.arg[0];
+				}
 				msgid = mid;
 				idFull = 1;
 				ifFull = 0;
